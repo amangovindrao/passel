@@ -1,0 +1,39 @@
+name: customer_app
+description: Paasel customer app.
+publish_to: none
+
+environment:
+  sdk: ^3.8.0
+  flutter: ">=3.32.0"
+
+resolution: workspace
+
+dependencies:
+  core:
+    path: ../../packages/core
+  # No firebase here on purpose. This app has no push surface — nothing in it
+  # ever called Firebase — and firebase_core + firebase_messaging drag in the
+  # Play Services messaging libraries for nothing.
+  #
+  # No google_maps_flutter either: it was declared but never used, and it pulls
+  # in the whole Maps Android SDK. Add it back with a real map screen.
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.6.1
+  geocoding: ^3.0.0
+  geolocator: ^14.0.2
+  go_router: ^14.8.1
+  riverpod_annotation: ^2.6.1
+  sentry_flutter: ^8.14.2
+  supabase_flutter: ^2.9.0
+  ui_kit:
+    path: ../../packages/ui_kit
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4
+  very_good_analysis: ^7.0.0
+
+flutter:
+  uses-material-design: true

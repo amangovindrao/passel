@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shown while the process starts. Points at launch_background.xml so the
+         native window matches the Flutter splash exactly. -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+    </style>
+    <!-- Applied once the process is up, and it stays behind the Flutter UI.
+         Left on the platform default this is white, which flashes through on a
+         dark-first app during route changes and behind any translucent surface. -->
+    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+</resources>

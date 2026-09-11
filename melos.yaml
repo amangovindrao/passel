@@ -1,0 +1,27 @@
+name: thescaleon
+repository: https://github.com/thescaleon/paasel
+
+packages:
+  - packages/*
+  - apps/*
+
+command:
+  bootstrap:
+    usePubspecOverrides: true
+
+scripts:
+  analyze:
+    run: dart analyze --fatal-infos .
+    exec:
+      concurrency: 1
+    packageFilters:
+      flutter: true
+      dirExists: lib
+
+  test:
+    run: flutter test
+    exec:
+      concurrency: 1
+    packageFilters:
+      flutter: true
+      dirExists: test

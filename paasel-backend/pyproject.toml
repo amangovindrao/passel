@@ -1,0 +1,51 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "paasel-backend"
+version = "2.0.0"
+description = "Paasel hyperlocal delivery API — FastAPI + PostgreSQL/PostGIS"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "alembic==1.14.0",
+    "asyncpg==0.30.0",
+    "celery[redis]==5.4.0",
+    # Required by PyJWT to verify Supabase's asymmetric (ES256) access tokens.
+    "cryptography==44.0.0",
+    "fastapi==0.115.6",
+    "geoalchemy2==0.16.0",
+    "PyJWT==2.10.1",
+    # Sync driver, used only by Alembic — see the note in alembic/env.py.
+    "psycopg2-binary==2.9.10",
+    "pydantic==2.10.4",
+    "pydantic-settings==2.7.1",
+    "redis==5.2.1",
+    "sentry-sdk[fastapi]==2.19.2",
+    "slowapi==0.1.9",
+    "sqlalchemy==2.0.36",
+    "structlog==24.4.0",
+    "uvicorn[standard]==0.34.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "httpx==0.28.1",
+    "pytest==8.3.4",
+    "pytest-asyncio==0.25.0",
+    "pytest-cov==6.0.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = ["integration: requires a running PostGIS database"]
+
+[tool.coverage.run]
+source = ["app"]
+branch = true

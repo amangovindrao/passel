@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Channel id referenced from AndroidManifest.xml. The channel itself is
+         created by firebase_messaging on first use; the id has to match on both
+         sides or notifications silently fall back to a low-importance default. -->
+    <string name="offer_notification_channel_id">paasel_rider_offers</string>
+</resources>

@@ -1,0 +1,27 @@
+name: camera_kit
+description: Paasel guided photo-capture widget.
+publish_to: none
+
+environment:
+  sdk: ^3.8.0
+  flutter: ">=3.32.0"
+
+resolution: workspace
+
+dependencies:
+  # `camera` is deliberately absent until this package actually has a capture
+  # widget in it. It is a pub workspace, so Flutter's plugin resolution pulled
+  # camera_android_camerax into all three app builds on the strength of this one
+  # line — CameraX compiled into every APK to support a library whose entire
+  # contents are a `library;` declaration. Phase 11 adds it back with the
+  # implementation that justifies it.
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^7.0.0
+
+flutter:
+  uses-material-design: true

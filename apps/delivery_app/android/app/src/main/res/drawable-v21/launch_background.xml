@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- The window the OS shows before Flutter has drawn anything.
+
+     It used to be plain white, which on a dark-first app reads as a flash of the
+     wrong app entirely. Matching the in-app splash exactly means the handover
+     from native to Flutter is invisible. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/paasel_ink" />
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@mipmap/splash_logo" />
+    </item>
+</layer-list>

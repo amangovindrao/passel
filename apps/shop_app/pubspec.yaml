@@ -1,0 +1,37 @@
+name: shop_app
+description: Paasel Shop app for store owners.
+publish_to: none
+
+environment:
+  sdk: ^3.8.0
+  flutter: ">=3.32.0"
+
+resolution: workspace
+
+dependencies:
+  core:
+    path: ../../packages/core
+  # No firebase here on purpose: nothing in this app ever called it, and
+  # firebase_core + firebase_messaging pull in the Play Services messaging
+  # libraries. Add them back alongside a real push handler.
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.6.1
+  go_router: ^14.8.1
+  image_picker: ^1.1.2
+  sentry_flutter: ^8.14.2
+  supabase_flutter: ^2.9.0
+  ui_kit:
+    path: ../../packages/ui_kit
+
+dev_dependencies:
+  # Needed by test/support/stubs.dart, which swaps Dio's adapter so the real
+  # ApiClient and its error mapping are exercised against canned responses.
+  dio: ^5.7.0
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4
+  very_good_analysis: ^7.0.0
+
+flutter:
+  uses-material-design: true

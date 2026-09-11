@@ -1,0 +1,21 @@
+name: thescaleon_workspace
+description: Paasel monorepo workspace root
+publish_to: none
+
+environment:
+  sdk: ^3.8.0
+
+workspace:
+  - packages/core
+  - packages/ui_kit
+  - packages/ui_kit/example
+  - packages/camera_kit
+  - apps/customer_app
+  - apps/shop_app
+  - apps/delivery_app
+
+dev_dependencies:
+  very_good_analysis: ^7.0.0
+
+flutter:
+  uses-material-design: true

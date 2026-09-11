@@ -1,0 +1,69 @@
+services:
+  db:
+    image: postgis/postgis:16-3.5
+    environment:
+      POSTGRES_DB: paasel
+      POSTGRES_USER: paasel
+      POSTGRES_PASSWORD: paasel
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U paasel -d paasel"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # 5434 on the host: this machine already runs a native PostgreSQL on 5432,
+    # and remapping is friendlier than asking anyone to stop their own service.
+    ports: ["5434:5432"]
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Throwaway database for the test suite. Separate from `db` so a test run can
+  # never touch dev data, and on 5433 because tests/conftest.py looks there.
+  # tmpfs-backed: nothing survives a restart, which is what you want here.
+  test-db:
+    image: postgis/postgis:16-3.5
+    environment:
+      POSTGRES_DB: paasel_test
+      POSTGRES_USER: paasel
+      POSTGRES_PASSWORD: paasel
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U paasel -d paasel_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports: ["5433:5432"]
+    tmpfs:
+      - /var/lib/postgresql/data
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    ports: ["6379:6379"]
+    volumes:
+      - redis_data:/data
+
+  app:
+    build: .
+    env_file: [.env]
+    depends_on:
+      db: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    command: >
+      sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips=*"
+    ports: ["8000:8000"]
+
+  celery:
+    build: .
+    env_file: [.env]
+    depends_on:
+      db: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    command: ["celery", "-A", "app.worker:celery_app", "worker", "--loglevel=INFO"]
+
+volumes:
+  postgres_data:
+  redis_data:

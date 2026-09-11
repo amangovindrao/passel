@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Kept in step with AppColors in packages/ui_kit by hand; there are only
+         two of them and no build step that could share the values. -->
+    <color name="paasel_ink">#0B0B0D</color>
+    <color name="paasel_gold">#D4AF37</color>
+</resources>

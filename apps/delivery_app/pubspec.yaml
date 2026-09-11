@@ -1,0 +1,36 @@
+name: delivery_app
+description: Paasel Rider app for delivery partners.
+publish_to: none
+
+environment:
+  sdk: ^3.8.0
+  flutter: ">=3.32.0"
+
+resolution: workspace
+
+dependencies:
+  core:
+    path: ../../packages/core
+  firebase_core: ^3.12.1
+  firebase_messaging: ^15.2.4
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.6.1
+  geolocator: ^14.0.0
+  go_router: ^14.8.1
+  google_maps_flutter: ^2.12.1
+  image_picker: ^1.1.2
+  sentry_flutter: ^8.14.2
+  supabase_flutter: ^2.9.0
+  ui_kit:
+    path: ../../packages/ui_kit
+
+dev_dependencies:
+  dio: ^5.7.0
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4
+  very_good_analysis: ^7.0.0
+
+flutter:
+  uses-material-design: true

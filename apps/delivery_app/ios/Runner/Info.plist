@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Paasel Rider</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>delivery_app</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+
+	<!-- Background execution. `location` is what lets the reporter keep running
+	     with the screen locked; `fetch` and `remote-notification` let a
+	     high-priority offer push wake the app. -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+
+	<!-- Apple's review process reads these strings and expects the in-app
+	     explanation to match them. The dashboard's explainer card says the same
+	     thing in the same words before the OS dialog appears, which is the
+	     point: the dialog alone reads as an app asking to follow someone
+	     around. Note also that the reporter genuinely stops when the rider goes
+	     offline — the justification below only holds while a shift is running. -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Paasel Rider uses your location to match you with nearby orders and to show shops and customers where their delivery is.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Paasel Rider needs your location even in the background so customers and shops can follow a delivery in progress. Tracking runs only while you are online, and stops the moment you go offline.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Paasel Rider needs your location even in the background so customers and shops can follow a delivery in progress. Tracking runs only while you are online, and stops the moment you go offline.</string>
+</dict>
+</plist>
