@@ -121,16 +121,25 @@ flowchart TD
 
 ## 💰 4. Financial & Unit Economics Profitability Model
 
-### 📊 Tiered Delivery Fee Structure
+### 📊 Standard Order Delivery Fee Structure
 
-Paasel operates a tiered delivery fee structure based on customer order value, while enabling delivery partners to carry **multiple parallel orders** on single routes to maximize rider earnings.
+Paasel maintains a transparent delivery fee model while enabling delivery partners to carry **multiple parallel orders** on single routes to maximize rider earnings.
 
-| Order Value Tier | Delivery Fee Charged | Delivery Partner Payout | Paasel Net Profit Margin |
-| :--- | :---: | :---: | :---: |
-| **Below ₹100 Order** | **₹49** | **₹36** | **₹13** |
-| **Above ₹100 Order** | **₹34** | **₹25** | **₹9** |
+| Order Metric | Fee Amount | Description |
+| :--- | :---: | :--- |
+| **Customer Delivery Fee Charged** | **₹34** | Flat transparent delivery fee for orders |
+| **Delivery Partner Payout** | **₹25** | Direct rider payout per order |
+| **Paasel Net Profit Margin** | **₹9** | **Pure platform gross margin saved per order** |
 
-> 💡 **Multi-Order Parallel Batching**: Delivery partners can pick up and deliver 2 to 3 orders along the same route simultaneously. This increases rider earnings to **₹50–₹100+ per trip** while keeping delivery fast and efficient.
+> 💡 **Multi-Order Parallel Batching**: Delivery partners can pick up and deliver 2 to 3 orders along the same route simultaneously. This increases rider earnings to **₹50–₹75+ per trip** while keeping delivery fast and efficient.
+
+---
+
+> [!NOTE]
+> ### 💡 Strategic Growth Note: Free Delivery Promotion for Small Orders (<₹100)
+> * **Market Gap & Opportunity**: Most local grocery buyers place frequent small orders (under ₹100, often purchasing under 10 items). Currently, **no quick-commerce player (Blinkit, Zepto, Swiggy) offers free delivery on orders under ₹100**.
+> * **Growth Strategy**: Paasel is evaluating a **Free Delivery Promotional Offer** during the initial market launch for small orders under ₹100.
+> * **Execution & Economics**: This promo will be subsidized using the **₹249/month Shop Subscription pool** and optimized via **parallel order batching** (where 2-3 small orders are batched together). This zero-delivery-fee advantage will drive viral user acquisition, explosive order volume, and unbeatable customer retention.
 
 ---
 
@@ -139,18 +148,13 @@ Paasel operates a tiered delivery fee structure based on customer order value, w
 * **Shop Subscription Plan**: **₹249 / month** per shop (0% sales commission).
 * **Average Monthly Order Volume**: **50 orders per shop/month**.
 
-$$\text{Monthly Net Profit per Shop} = \text{Shop Subscription (₹249)} + (\text{Monthly Orders (50)} \times \text{Net Margin per Order})$$
+$$\text{Monthly Net Profit per Shop} = \text{Shop Subscription (₹249)} + (\text{Monthly Orders (50)} \times \text{Net Margin (₹9)})$$
 
 #### Single Shop Monthly Math Breakdown:
 1. **Subscription Fee**: ₹249 / month
-2. **Order Margin Profit (50 orders)**:
-   * Min Margin (Above ₹100 orders @ ₹9/order): $50 \times \text{₹9} = \mathbf{₹450}$
-   * Average Margin (Weighted blend @ ₹11/order): $50 \times \text{₹11} = \mathbf{₹550}$
-   * Max Margin (Below ₹100 orders @ ₹13/order): $50 \times \text{₹13} = \mathbf{₹650}$
+2. **Order Margin Profit (50 orders @ ₹9/order)**: $50 \times \text{₹9} = \mathbf{₹450}$
 3. **Total Monthly Net Earnings per Shop**:
-   $$\text{Min: } ₹249 + ₹450 = \mathbf{₹699/month}$$
-   $$\text{Avg: } ₹249 + ₹550 = \mathbf{₹799/month}$$
-   $$\text{Max: } ₹249 + ₹650 = \mathbf{₹899/month}$$
+   $$\text{₹249} + \text{₹450} = \mathbf{₹699 / month}$$
 
 ---
 
@@ -160,14 +164,9 @@ $$\text{Monthly Net Profit per Shop} = \text{Shop Subscription (₹249)} + (\tex
 * **Total Shops**: 100 Shops
 * **Subscription Revenue**: $100 \times ₹249 = \mathbf{₹24,900 / \text{month}}$
 * **Total Orders Delivered**: $100 \text{ shops} \times 50 \text{ orders} = \mathbf{5,000 \text{ orders / month}}$
-* **Order Margin Earnings**:
-  * Min (@ ₹9/order): $5,000 \times ₹9 = \mathbf{₹45,000}$
-  * Avg (@ ₹11/order): $5,000 \times ₹11 = \mathbf{₹55,000}$
-  * Max (@ ₹13/order): $5,000 \times ₹13 = \mathbf{₹65,000}$
+* **Order Margin Earnings**: $5,000 \times ₹9 = \mathbf{₹45,000 / \text{month}}$
 * **Total Monthly Gross Profit**:
-  * **Min**: $₹24,900 + ₹45,000 = \mathbf{₹69,900 / \text{month}}$ (~₹8.38 Lakhs / year)
-  * **Avg**: $₹24,900 + ₹55,000 = \mathbf{₹79,900 / \text{month}}$ (~₹9.58 Lakhs / year)
-  * **Max**: $₹24,900 + ₹65,000 = \mathbf{₹89,900 / \text{month}}$ (~₹10.78 Lakhs / year)
+  $$₹24,900 + ₹45,000 = \mathbf{₹69,900 / \text{month}} \quad (\sim \mathbf{₹8.38 \text{ Lakhs / year ARR}})$$
 
 ---
 
@@ -175,14 +174,9 @@ $$\text{Monthly Net Profit per Shop} = \text{Shop Subscription (₹249)} + (\tex
 * **Total Shops**: 150 Shops
 * **Subscription Revenue**: $150 \times ₹249 = \mathbf{₹37,350 / \text{month}}$
 * **Total Orders Delivered**: $150 \text{ shops} \times 50 \text{ orders} = \mathbf{7,500 \text{ orders / month}}$
-* **Order Margin Earnings**:
-  * Min (@ ₹9/order): $7,500 \times ₹9 = \mathbf{₹67,500}$
-  * Avg (@ ₹11/order): $7,500 \times ₹11 = \mathbf{₹82,500}$
-  * Max (@ ₹13/order): $7,500 \times ₹13 = \mathbf{₹97,500}$
+* **Order Margin Earnings**: $7,500 \times ₹9 = \mathbf{₹67,500 / \text{month}}$
 * **Total Monthly Gross Profit**:
-  * **Min**: $₹37,350 + ₹67,500 = \mathbf{₹1,04,850 / \text{month}}$ (~₹12.58 Lakhs / year)
-  * **Avg**: $₹37,350 + ₹82,500 = \mathbf{₹1,19,850 / \text{month}}$ (~₹14.38 Lakhs / year)
-  * **Max**: $₹37,350 + ₹97,500 = \mathbf{₹1,34,850 / \text{month}}$ (~₹16.18 Lakhs / year)
+  $$₹37,350 + ₹67,500 = \mathbf{₹1,04,850 / \text{month}} \quad (\sim \mathbf{₹12.58 \text{ Lakhs / year ARR}})$$
 
 ---
 
@@ -192,9 +186,9 @@ $$\text{Monthly Net Profit per Shop} = \text{Shop Subscription (₹249)} + (\tex
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Monthly Subscriptions (₹249/shop)** | ₹249 | ₹12,450 | ₹24,900 | ₹37,350 | ₹74,700 | ₹1,24,500 |
 | **Monthly Orders (50 orders/shop)** | 50 | 2,500 | 5,000 | 7,500 | 15,000 | 25,000 |
-| **Order Profit Margin (₹9 - ₹13)** | ₹450 - ₹650 | ₹22,500 - ₹32,500 | ₹45,000 - ₹65,000 | ₹67,500 - ₹97,500 | ₹1,35,000 - ₹1,95,000 | ₹2,25,000 - ₹3,25,000 |
-| **Total Monthly Revenue** | **₹699 - ₹899** | **₹34,950 - ₹44,950** | **₹69,900 - ₹89,900** | **₹1,04,850 - ₹1,34,850** | **₹2,09,700 - ₹2,69,700** | **₹3,49,500 - ₹4,49,500** |
-| **Annualized Net Earnings (ARR)** | **~₹8.4K - ₹10.8K** | **~₹4.19L - ₹5.39L** | **~₹8.38L - ₹10.78L** | **~₹12.58L - ₹16.18L** | **~₹25.16L - ₹32.36L** | **~₹41.94L - ₹53.94L** |
+| **Order Profit Margin (₹9/order)** | ₹450 | ₹22,500 | ₹45,000 | ₹67,500 | ₹1,35,000 | ₹2,25,000 |
+| **Total Monthly Revenue** | **₹699** | **₹34,950** | **₹69,900** | **₹1,04,850** | **₹2,09,700** | **₹3,49,500** |
+| **Annualized Net Earnings (ARR)** | **~₹8.4K** | **~₹4.19L** | **~₹8.38L** | **~₹12.58L** | **~₹25.16L** | **~₹41.94L** |
 
 ---
 
@@ -202,18 +196,16 @@ $$\text{Monthly Net Profit per Shop} = \text{Shop Subscription (₹249)} + (\tex
 
 ```mermaid
 graph LR
-    C1[Customer Order < ₹100<br/>Pays Item + ₹49 Fee] --> P[Paasel Payment Gateway / Razorpay Route]
-    C2[Customer Order > ₹100<br/>Pays Item + ₹34 Fee] --> P
+    C[Customer Pays Item Price + ₹34 Fee] --> P[Paasel Payment Gateway / Razorpay Route]
     
     P -->|Item Price: 100%| S[Shopkeeper Wallet / Bank Account]
-    P -->|Order < ₹100 Payout: ₹36| D1[Delivery Partner Wallet]
-    P -->|Order > ₹100 Payout: ₹25| D2[Delivery Partner Wallet]
-    P -->|Net Margin: ₹9 - ₹13| Profit[Paasel Profit Pool]
+    P -->|Delivery Payout: ₹25| D[Delivery Partner Wallet]
+    P -->|Net Margin: ₹9| Profit[Paasel Profit Pool]
 
     ShopSub[Shopkeeper Monthly Plan: ₹249] --> Profit
 
     subgraph Paasel Net Monthly Income
-        Profit --> TotalEarnings["Total Monthly Revenue<br/>(₹249/shop Sub + ₹9-13/order Margin)"]
+        Profit --> TotalEarnings["Total Monthly Revenue<br/>(₹249/shop Sub + ₹9/order Margin)"]
     end
 ```
 
@@ -222,8 +214,8 @@ graph LR
 ## 🎯 Summary Conclusion
 
 1. **Increased Merchant Value**: At **₹249/month**, shops get a complete digital store, ordering app, and delivery fleet for under ₹9/day.
-2. **Highly Efficient Rider Batching**: Allowing riders to carry **multiple orders in parallel** significantly increases rider retention and hourly payout.
+2. **Competitive Free Delivery Edge**: Offering promotional free delivery on small orders (<₹100) will unlock massive order volume that no Quick-Commerce competitor currently captures.
 3. **Solid Profitability Milestone**:
-   * **100 Shops** generates **₹69,900 to ₹89,900 / month** (~₹10.7 Lakhs ARR).
-   * **150 Shops** generates **₹1,04,850 to ₹1,34,850 / month** (~₹16.1 Lakhs ARR).
-4. **Strong Scaling Potential**: Reaching **500 shops** generates over **₹3.5 Lakhs to ₹4.5 Lakhs monthly net profit** (~₹50+ Lakhs ARR).
+   * **100 Shops** generates **₹69,900 / month** (~₹8.38 Lakhs ARR).
+   * **150 Shops** generates **₹1,04,850 / month** (~₹12.58 Lakhs ARR).
+4. **Strong Scaling Potential**: Reaching **500 shops** generates **₹3,49,500 monthly net profit** (~₹41.94 Lakhs ARR).

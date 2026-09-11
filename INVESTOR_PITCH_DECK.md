@@ -37,16 +37,14 @@ graph TD
 ```mermaid
 graph LR
     Shop["🏪 Local Kirana Shop<br/>(Pays ₹249/mo flat)"] --- Platform["⚡ Paasel Hyperlocal Engine<br/>(0% Shop Commission)"]
-    Customer["🛒 Local Customer<br/>(Pays ₹34-49 Delivery Fee)"] --- Platform
-    Rider["🛵 Local Rider<br/>(Earns ₹25-36 Payout + Parallel Orders)"] --- Platform
-    Platform --> Profit["💰 Paasel Net Margin<br/>(₹9-13 per order)"]
+    Customer["🛒 Local Customer<br/>(Pays ₹34 Delivery Fee)"] --- Platform
+    Rider["🛵 Local Rider<br/>(Earns ₹25 Payout + Parallel Orders)"] --- Platform
+    Platform --> Profit["💰 Paasel Net Margin<br/>(₹9 per order)"]
 ```
 
 * **Shop-First Zero Commission**: Shops keep 100% of their product sales. They pay only a flat **₹249/month subscription fee** (<₹9/day).
-* **Tiered Hyperlocal Delivery**: 
-  * Orders below ₹100: **₹49 delivery fee** (₹36 rider payout | **₹13 Paasel profit**).
-  * Orders above ₹100: **₹34 delivery fee** (₹25 rider payout | **₹9 Paasel profit**).
-* **Multi-Order Parallel Batching**: Delivery partners deliver multiple orders on the same route simultaneously, boosting rider income to **₹50–₹100+ per trip**.
+* **Transparent Delivery Pricing**: **₹34 customer delivery fee** (₹25 rider payout | **₹9 Paasel net profit**).
+* **Multi-Order Parallel Batching**: Delivery partners deliver multiple orders on the same route simultaneously, boosting rider income to **₹50–₹75+ per trip**.
 * **Built-in Quality Control**: Photo verification at packing and double OTP verification (Pickup OTP + Delivery OTP) to eliminate order disputes.
 
 ---
@@ -72,34 +70,40 @@ graph LR
 
 ## 💰 4. Unit Economics & Business Model
 
-### A. Tiered Delivery Fee & Per-Order Unit Economics
+### A. Per-Order Unit Economics
 
 ```mermaid
-pie title Average Delivery Fee Split (Average ₹41 Fee)
-    "Delivery Partner Payout (₹30)" : 73
-    "Paasel Net Profit Margin (₹11)" : 27
+pie title Delivery Fee Split (₹34 Fee)
+    "Delivery Partner Payout (₹25)" : 74
+    "Paasel Net Profit Margin (₹9)" : 26
 ```
 
-| Order Value Tier | Customer Fee | Rider Payout | Paasel Net Profit | Key Advantage |
-| :--- | :---: | :---: | :---: | :--- |
-| **Below ₹100 Order** | **₹49** | **₹36** | **₹13** | High margin on low ticket orders |
-| **Above ₹100 Order** | **₹34** | **₹25** | **₹9** | High volume conversion incentive |
+| Component | Amount | Investor Impact |
+| :--- | :---: | :--- |
+| **Customer Delivery Fee Charged** | **₹34** | Transparent checkout delivery charge |
+| **Delivery Partner Payout** | **₹25** | Instant rider wallet credit per order |
+| **Paasel Net Profit Margin** | **₹9** | **Pure platform gross margin saved per order** |
 
-> 🛵 **Rider Parallel Batching**: Riders can carry 2–3 orders per batch on shared routes, making **₹50–₹100+ per delivery run**, driving high rider retention and fast delivery.
+> 🛵 **Rider Parallel Batching**: Riders can carry 2–3 orders per batch on shared routes, making **₹50–₹75+ per delivery run**, driving high rider retention and fast delivery.
+
+---
+
+> [!NOTE]
+> ### 💡 Strategic Growth Catalyst: Promotional Free Delivery on Small Orders (<₹100)
+> * **Market Gap**: Most daily household grocery items are small transactions under ₹100 (purchasing under 10 daily items). **No competitor (Blinkit, Zepto, Swiggy) provides free delivery on orders under ₹100**.
+> * **Growth Hack**: Paasel will run a **Promotional Free Delivery Campaign** for small orders during market entry.
+> * **Financial Engine**: Subsidized via the **₹249/month merchant subscription fund** and optimized through **multi-order parallel route batching**. This strategy eliminates purchase friction, drastically lowers CAC, and creates viral customer adoption.
 
 ---
 
 ### B. Single Shop Unit Economics
 Assuming a typical Kirana store processes **50 orders per month**:
 
-$$\text{Monthly Revenue per Shop} = \text{Subscription Fee (₹249)} + (\text{Monthly Orders (50)} \times \text{Net Profit Margin})$$
+$$\text{Monthly Revenue per Shop} = \text{Subscription Fee (₹249)} + (\text{Monthly Orders (50)} \times \text{Net Profit Margin (₹9)})$$
 
 * **Subscription Fee**: ₹249 / month
-* **Order Profit Margin (50 orders/month)**:
-  * Min Margin (Above ₹100 orders @ ₹9/order): $50 \times \text{₹9} = \mathbf{₹450}$
-  * Avg Margin (Weighted blend @ ₹11/order): $50 \times \text{₹11} = \mathbf{₹550}$
-  * Max Margin (Below ₹100 orders @ ₹13/order): $50 \times \text{₹13} = \mathbf{₹650}$
-* **Total Net Monthly Profit per Shop**: **₹699 to ₹899 / month**
+* **Order Profit Margin (50 orders @ ₹9/order)**: $50 \times \text{₹9} = \mathbf{₹450}$
+* **Total Net Monthly Profit per Shop**: **₹699 / month**
 
 ---
 
@@ -107,10 +111,10 @@ $$\text{Monthly Revenue per Shop} = \text{Subscription Fee (₹249)} + (\text{Mo
 
 ```mermaid
 graph TD
-    P1["Phase 1: 100 Shops<br/>₹69,900 - ₹89,900 / mo (~₹10.7L ARR)"] --> P2["Phase 2: 150 Shops<br/>₹1,04,850 - ₹1,34,850 / mo (~₹16.1L ARR)"]
-    P2 --> P3["Phase 3: 500 Shops<br/>₹3,49,500 - ₹4,49,500 / mo (~₹53.9L ARR)"]
-    P3 --> P4["Phase 4: 2,000 Shops<br/>₹13,98,000 - ₹17,98,000 / mo (~₹2.15 Cr ARR)"]
-    P4 --> P5["Phase 5: 5,000 Shops<br/>₹34.95L - ₹44.95L / mo (~₹5.39 Cr ARR)"]
+    P1["Phase 1: 100 Shops<br/>₹69,900 / mo (~₹8.38L ARR)"] --> P2["Phase 2: 150 Shops<br/>₹1,04,850 / mo (~₹12.58L ARR)"]
+    P2 --> P3["Phase 3: 500 Shops<br/>₹3,49,500 / mo (~₹41.94L ARR)"]
+    P3 --> P4["Phase 4: 2,000 Shops<br/>₹13,98,000 / mo (~₹1.67 Cr ARR)"]
+    P4 --> P5["Phase 5: 5,000 Shops<br/>₹34,95,000 / mo (~₹4.19 Cr ARR)"]
 ```
 
 #### Detailed Financial Scaling Table:
@@ -119,9 +123,9 @@ graph TD
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **Monthly Subscription (₹249/shop)** | ₹24,900 | ₹37,350 | ₹1,24,500 | ₹4,98,000 | ₹12,45,000 |
 | **Monthly Orders (50 orders/shop)** | 5,000 | 7,500 | 25,000 | 1,00,000 | 2,50,000 |
-| **Order Profit Margin (₹9 - ₹13)** | ₹45,000 - ₹65,000 | ₹67,500 - ₹97,500 | ₹2,25,000 - ₹3,25,000 | ₹9,00,000 - ₹13,00,000 | ₹22,50,000 - ₹32,50,000 |
-| **Total Monthly Gross Profit** | **₹69,900 - ₹89,900** | **₹1,04,850 - ₹1,34,850** | **₹3,49,500 - ₹4,49,500** | **₹13,98,000 - ₹17,98,000** | **₹34,95,000 - ₹44,95,000** |
-| **Annualized Revenue (ARR)** | **~₹8.38L - ₹10.78L** | **~₹12.58L - ₹16.18L** | **~₹41.94L - ₹53.94L** | **~₹1.67Cr - ₹2.15Cr** | **~₹4.19Cr - ₹5.39Cr** |
+| **Order Profit Margin (₹9/order)** | ₹45,000 | ₹67,500 | ₹2,25,000 | ₹9,00,000 | ₹22,50,000 |
+| **Total Monthly Gross Profit** | **₹69,900** | **₹1,04,850** | **₹3,49,500** | **₹13,98,000** | **₹34,95,000** |
+| **Annualized Revenue (ARR)** | **~₹8.38 Lakhs** | **~₹12.58 Lakhs** | **~₹41.94 Lakhs** | **~₹1.67 Crores** | **~₹4.19 Crores** |
 
 ---
 
@@ -196,10 +200,10 @@ pie title Use of Funds Allocation
 
 ## 🏆 8. Key Milestones & Roadmap
 
-* **Month 1 - 3**: Onboard **100 - 150 Kirana Shops**, reach **₹1.0 Lakh - ₹1.35 Lakhs monthly gross profit**.
-* **Month 4 - 6**: Expand to **500 Kirana Shops**, reach **₹3.5 Lakhs - ₹4.5 Lakhs monthly gross profit** (~₹50L+ ARR).
-* **Month 7 - 12**: Scale to **2,000 Shops across 3 cities**, reach **₹1.6 Cr - ₹2.1 Cr ARR milestone**.
-* **Month 13 - 24**: Scale to **5,000+ Shops**, achieve **₹5.0 Crore+ ARR** and launch B2B inventory restocking features for shops.
+* **Month 1 - 3**: Onboard **100 - 150 Kirana Shops**, reach **₹69,900 - ₹1,04,850 monthly gross profit**.
+* **Month 4 - 6**: Expand to **500 Kirana Shops**, reach **₹3.49 Lakhs monthly gross profit** (~₹42L ARR).
+* **Month 7 - 12**: Scale to **2,000 Shops across 3 cities**, reach **₹1.67 Cr ARR milestone**.
+* **Month 13 - 24**: Scale to **5,000+ Shops**, achieve **₹4.19 Crore+ ARR** and launch B2B inventory restocking features for shops.
 
 ---
 
