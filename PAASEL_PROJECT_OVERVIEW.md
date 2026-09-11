@@ -10,10 +10,10 @@
 * **Triple-App Ecosystem**:
   1. **Customer App** (Flutter): Browse local catalog, place recurring ration/grocery orders, live track delivery, OTP verification.
   2. **Shop Owner App** (Flutter): Inventory/product management, order acceptance, packing photo verification, subscription status tracking.
-  3. **Delivery Partner App** (Flutter): Order assignment notification (Fresh & Batch detour), route navigation, pickup/delivery OTP validation, wallet earnings.
+  3. **Delivery Partner App** (Flutter): Order assignment notification (Fresh & Batch detour), parallel multi-order delivery routing, pickup/delivery OTP validation, wallet earnings.
 * **Robust FastAPI Backend**: High-performance Python backend with PostgreSQL 16 + PostGIS, Redis + Celery task queue for automated driver assignment cascades.
 * **Supabase Authentication**: Secure Phone OTP signup/login across all applications with JWT role-based access control (`customer`, `shop_owner`, `delivery_partner`, `admin`).
-* **Financial & Wallet Engine**: Integer-paise precision ledger, Razorpay Route split payments, COD debit balance tracking, and automated merchant subscriptions (₹149/month).
+* **Financial & Wallet Engine**: Integer-paise precision ledger, Razorpay Route split payments, COD debit balance tracking, and automated merchant subscriptions (₹249/month).
 
 ---
 
@@ -97,7 +97,7 @@ flowchart TD
     ShopPrep --> PackPhoto[Shop Uploads Packing Photo]
     PackPhoto --> ReadyPickup[Status: READY_FOR_PICKUP]
 
-    ReadyPickup --> DriverMatching[Celery Dispatch Engine Searches Nearby Online Drivers]
+    ReadyPickup --> DriverMatching[Celery Dispatch Engine Searches Nearby Drivers & Batches Parallel Orders]
     DriverMatching --> OfferSent{Driver Assignment Offer}
     
     OfferSent -->|Decline / Timeout 35s| NextDriver[Cascade to Next Nearest Driver]
@@ -109,7 +109,7 @@ flowchart TD
     ArriveShop --> VerifyPickup[Driver enters 4-digit Pickup OTP]
     VerifyPickup --> PickedUp[Status: PICKED_UP -> OUT_FOR_DELIVERY]
 
-    PickedUp --> ReachCustomer[Driver Arrives at Customer Location]
+    PickedUp --> ReachCustomer[Driver Delivers Orders in Parallel Route]
     ReachCustomer --> VerifyDelivery[Customer Provides 4-digit Delivery OTP]
     VerifyDelivery --> Delivered[Status: DELIVERED & COMPLETED]
 
@@ -121,70 +121,80 @@ flowchart TD
 
 ## 💰 4. Financial & Unit Economics Profitability Model
 
-### 📊 Per-Order Economics Breakdown
-For every grocery/ration order delivered through Paasel:
+### 📊 Tiered Delivery Fee Structure
 
-| Component | Amount (₹) | Description |
-| :--- | :--- | :--- |
-| **Delivery / Platform Fee Charged** | **₹25 – ₹35** | Charged to customer per order |
-| **Delivery Partner Payout** | **₹20 – ₹25** | Earned by driver for delivering order |
-| **Paasel Net Profit Margin** | **₹8 – ₹9** | **Net revenue saved by Paasel per order** |
+Paasel operates a tiered delivery fee structure based on customer order value, while enabling delivery partners to carry **multiple parallel orders** on single routes to maximize rider earnings.
+
+| Order Value Tier | Delivery Fee Charged | Delivery Partner Payout | Paasel Net Profit Margin |
+| :--- | :---: | :---: | :---: |
+| **Below ₹100 Order** | **₹49** | **₹36** | **₹13** |
+| **Above ₹100 Order** | **₹34** | **₹25** | **₹9** |
+
+> 💡 **Multi-Order Parallel Batching**: Delivery partners can pick up and deliver 2 to 3 orders along the same route simultaneously. This increases rider earnings to **₹50–₹100+ per trip** while keeping delivery fast and efficient.
 
 ---
 
 ### 🏪 Single Shop Monthly Earnings Formula
-Suppose 1 local kirana shop has **5 regular monthly ration customers**.
-* **Order Frequency**: 5 regular customers place 5–6 orders per month = **25 to 30 minimum orders per shop/month**.
 
-$$\text{Monthly Earnings from 1 Shop} = \text{Shop Subscription Fee} + (\text{Monthly Orders} \times \text{Net Profit per Order})$$
+* **Shop Subscription Plan**: **₹249 / month** per shop (0% sales commission).
+* **Average Monthly Order Volume**: **50 orders per shop/month**.
 
-#### Math Calculation for 1 Shop:
-1. **Subscription Fee**: ₹149 / month
-2. **Order Profit Margin**:
-   * Minimum (25 orders × ₹8): **₹200**
-   * Maximum (30 orders × ₹9): **₹270**
+$$\text{Monthly Net Profit per Shop} = \text{Shop Subscription (₹249)} + (\text{Monthly Orders (50)} \times \text{Net Margin per Order})$$
+
+#### Single Shop Monthly Math Breakdown:
+1. **Subscription Fee**: ₹249 / month
+2. **Order Margin Profit (50 orders)**:
+   * Min Margin (Above ₹100 orders @ ₹9/order): $50 \times \text{₹9} = \mathbf{₹450}$
+   * Average Margin (Weighted blend @ ₹11/order): $50 \times \text{₹11} = \mathbf{₹550}$
+   * Max Margin (Below ₹100 orders @ ₹13/order): $50 \times \text{₹13} = \mathbf{₹650}$
 3. **Total Monthly Net Earnings per Shop**:
-   $$\text{₹149} + \text{₹200} = \mathbf{₹349/month} \quad \text{to} \quad \text{₹149} + \text{₹270} = \mathbf{₹419/month}$$
+   $$\text{Min: } ₹249 + ₹450 = \mathbf{₹699/month}$$
+   $$\text{Avg: } ₹249 + ₹550 = \mathbf{₹799/month}$$
+   $$\text{Max: } ₹249 + ₹650 = \mathbf{₹899/month}$$
 
 ---
 
-### 📈 Scaled Earnings Calculation (Initial Months)
+### 📈 Scaled Earnings Calculation (Initial & Growth Months)
 
-#### Scenario A: 100 Shops Onboarded (Starting Target)
+#### Scenario A: 100 Shops Onboarded (Initial Target)
 * **Total Shops**: 100 Shops
-* **Subscription Revenue**: $100 \times ₹149 = \mathbf{₹14,900/\text{month}}$
-* **Total Orders Generated**: $100 \text{ shops} \times 25 \text{ to } 30 \text{ orders} = \mathbf{2,500 \text{ to } 3,000 \text{ orders/month}}$
+* **Subscription Revenue**: $100 \times ₹249 = \mathbf{₹24,900 / \text{month}}$
+* **Total Orders Delivered**: $100 \text{ shops} \times 50 \text{ orders} = \mathbf{5,000 \text{ orders / month}}$
 * **Order Margin Earnings**:
-  * $2,500 \text{ orders} \times ₹8 = \mathbf{₹20,000}$
-  * $3,000 \text{ orders} \times ₹9 = \mathbf{₹27,000}$
+  * Min (@ ₹9/order): $5,000 \times ₹9 = \mathbf{₹45,000}$
+  * Avg (@ ₹11/order): $5,000 \times ₹11 = \mathbf{₹55,000}$
+  * Max (@ ₹13/order): $5,000 \times ₹13 = \mathbf{₹65,000}$
 * **Total Monthly Gross Profit**:
-  * Min: $₹14,900 + ₹20,000 = \mathbf{₹34,900/\text{month}}$ (~₹4.18 Lakhs / year)
-  * Max: $₹14,900 + ₹27,000 = \mathbf{₹41,900/\text{month}}$ (~₹5.02 Lakhs / year)
+  * **Min**: $₹24,900 + ₹45,000 = \mathbf{₹69,900 / \text{month}}$ (~₹8.38 Lakhs / year)
+  * **Avg**: $₹24,900 + ₹55,000 = \mathbf{₹79,900 / \text{month}}$ (~₹9.58 Lakhs / year)
+  * **Max**: $₹24,900 + ₹65,000 = \mathbf{₹89,900 / \text{month}}$ (~₹10.78 Lakhs / year)
 
 ---
 
 #### Scenario B: 150 Shops Onboarded (Growth Stage)
 * **Total Shops**: 150 Shops
-* **Subscription Revenue**: $150 \times ₹149 = \mathbf{₹22,350/\text{month}}$
-* **Total Orders Generated**: $150 \text{ shops} \times 25 \text{ to } 30 \text{ orders} = \mathbf{3,750 \text{ to } 4,500 \text{ orders/month}}$
+* **Subscription Revenue**: $150 \times ₹249 = \mathbf{₹37,350 / \text{month}}$
+* **Total Orders Delivered**: $150 \text{ shops} \times 50 \text{ orders} = \mathbf{7,500 \text{ orders / month}}$
 * **Order Margin Earnings**:
-  * $3,750 \text{ orders} \times ₹8 = \mathbf{₹30,000}$
-  * $4,500 \text{ orders} \times ₹9 = \mathbf{₹40,500}$
+  * Min (@ ₹9/order): $7,500 \times ₹9 = \mathbf{₹67,500}$
+  * Avg (@ ₹11/order): $7,500 \times ₹11 = \mathbf{₹82,500}$
+  * Max (@ ₹13/order): $7,500 \times ₹13 = \mathbf{₹97,500}$
 * **Total Monthly Gross Profit**:
-  * Min: $₹22,350 + ₹30,000 = \mathbf{₹52,350/\text{month}}$ (~₹6.28 Lakhs / year)
-  * Max: $₹22,350 + ₹40,500 = \mathbf{₹62,850/\text{month}}$ (~₹7.54 Lakhs / year)
+  * **Min**: $₹37,350 + ₹67,500 = \mathbf{₹1,04,850 / \text{month}}$ (~₹12.58 Lakhs / year)
+  * **Avg**: $₹37,350 + ₹82,500 = \mathbf{₹1,19,850 / \text{month}}$ (~₹14.38 Lakhs / year)
+  * **Max**: $₹37,350 + ₹97,500 = \mathbf{₹1,34,850 / \text{month}}$ (~₹16.18 Lakhs / year)
 
 ---
 
 ### 💵 Comprehensive Financial Scale Projection Table
 
-| Metric | 1 Shop | 50 Shops | 100 Shops | 150 Shops | 300 Shops | 500 Shops |
+| Scale Metric | 1 Shop | 50 Shops | 100 Shops | 150 Shops | 300 Shops | 500 Shops |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Monthly Subscription (₹149/shop)** | ₹149 | ₹7,450 | ₹14,900 | ₹22,350 | ₹44,700 | ₹74,500 |
-| **Monthly Orders (25 - 30/shop)** | 25 - 30 | 1,250 - 1,500 | 2,500 - 3,000 | 3,750 - 4,500 | 7,500 - 9,000 | 12,500 - 15,000 |
-| **Order Margin Earnings (₹8 - ₹9/order)** | ₹200 - ₹270 | ₹10,000 - ₹13,500 | ₹20,000 - ₹27,000 | ₹30,000 - ₹40,500 | ₹60,000 - ₹81,000 | ₹1,00,000 - ₹1,35,000 |
-| **Total Monthly Revenue** | **₹349 - ₹419** | **₹17,450 - ₹20,950** | **₹34,900 - ₹41,900** | **₹52,350 - ₹62,850** | **₹1,04,700 - ₹1,25,700** | **₹1,74,500 - ₹2,09,500** |
-| **Annualized Net Earnings** | **~₹4.1K - ₹5.0K** | **~₹2.09L - ₹2.51L** | **~₹4.18L - ₹5.02L** | **~₹6.28L - ₹7.54L** | **~₹12.56L - ₹15.08L** | **~₹20.94L - ₹25.14L** |
+| **Monthly Subscriptions (₹249/shop)** | ₹249 | ₹12,450 | ₹24,900 | ₹37,350 | ₹74,700 | ₹1,24,500 |
+| **Monthly Orders (50 orders/shop)** | 50 | 2,500 | 5,000 | 7,500 | 15,000 | 25,000 |
+| **Order Profit Margin (₹9 - ₹13)** | ₹450 - ₹650 | ₹22,500 - ₹32,500 | ₹45,000 - ₹65,000 | ₹67,500 - ₹97,500 | ₹1,35,000 - ₹1,95,000 | ₹2,25,000 - ₹3,25,000 |
+| **Total Monthly Revenue** | **₹699 - ₹899** | **₹34,950 - ₹44,950** | **₹69,900 - ₹89,900** | **₹1,04,850 - ₹1,34,850** | **₹2,09,700 - ₹2,69,700** | **₹3,49,500 - ₹4,49,500** |
+| **Annualized Net Earnings (ARR)** | **~₹8.4K - ₹10.8K** | **~₹4.19L - ₹5.39L** | **~₹8.38L - ₹10.78L** | **~₹12.58L - ₹16.18L** | **~₹25.16L - ₹32.36L** | **~₹41.94L - ₹53.94L** |
 
 ---
 
@@ -192,16 +202,18 @@ $$\text{Monthly Earnings from 1 Shop} = \text{Shop Subscription Fee} + (\text{Mo
 
 ```mermaid
 graph LR
-    C[Customer Pays ₹100 Item + ₹30 Fee] --> P[Paasel Payment Processor / Razorpay Route]
+    C1[Customer Order < ₹100<br/>Pays Item + ₹49 Fee] --> P[Paasel Payment Gateway / Razorpay Route]
+    C2[Customer Order > ₹100<br/>Pays Item + ₹34 Fee] --> P
     
-    P -->|Item Price: ₹100| S[Shopkeeper Wallet / Bank Account]
-    P -->|Delivery Payout: ₹21| D[Delivery Partner Wallet]
-    P -->|Platform Margin: ₹9| Profit[Paasel Profit Pool]
+    P -->|Item Price: 100%| S[Shopkeeper Wallet / Bank Account]
+    P -->|Order < ₹100 Payout: ₹36| D1[Delivery Partner Wallet]
+    P -->|Order > ₹100 Payout: ₹25| D2[Delivery Partner Wallet]
+    P -->|Net Margin: ₹9 - ₹13| Profit[Paasel Profit Pool]
 
-    ShopSub[Shopkeeper Monthly Plan: ₹149] --> Profit
+    ShopSub[Shopkeeper Monthly Plan: ₹249] --> Profit
 
-    subgraph Paasel Net Monthly Earnings
-        Profit --> TotalEarnings["Total Monthly Income<br/>(₹149/shop Sub + ₹8-9/order Margin)"]
+    subgraph Paasel Net Monthly Income
+        Profit --> TotalEarnings["Total Monthly Revenue<br/>(₹249/shop Sub + ₹9-13/order Margin)"]
     end
 ```
 
@@ -209,7 +221,9 @@ graph LR
 
 ## 🎯 Summary Conclusion
 
-1. **Low Friction Onboarding**: A nominal subscription of **₹149/month** makes shop onboarding extremely easy for small kirana vendors.
-2. **Predictable Unit Economics**: Earning **₹8 to ₹9 net profit per order** ensures positive cash flow from day one without burning capital.
-3. **Quick Profitability Milestone**: Reaching just **100–150 active shops** generates **₹35,000 to ₹63,000 per month** in pure gross earnings.
-4. **Strong Scaling Potential**: At 500 shops, Paasel achieves over **₹2.0 Lakhs+ monthly recurring profit**.
+1. **Increased Merchant Value**: At **₹249/month**, shops get a complete digital store, ordering app, and delivery fleet for under ₹9/day.
+2. **Highly Efficient Rider Batching**: Allowing riders to carry **multiple orders in parallel** significantly increases rider retention and hourly payout.
+3. **Solid Profitability Milestone**:
+   * **100 Shops** generates **₹69,900 to ₹89,900 / month** (~₹10.7 Lakhs ARR).
+   * **150 Shops** generates **₹1,04,850 to ₹1,34,850 / month** (~₹16.1 Lakhs ARR).
+4. **Strong Scaling Potential**: Reaching **500 shops** generates over **₹3.5 Lakhs to ₹4.5 Lakhs monthly net profit** (~₹50+ Lakhs ARR).

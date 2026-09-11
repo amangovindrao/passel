@@ -9,7 +9,7 @@
 * **Company Name**: Paasel (by theScaleOn)
 * **Industry**: Hyperlocal E-Commerce / Quick-Commerce Tech / Logistics
 * **Core Product**: Triple-App Ecosystem (Customer, Shop Owner, Delivery Partner) + High-Concurrency FastAPI & PostGIS Engine.
-* **Key Innovation**: Zero-commission subscription model (₹149/month per shop) replacing heavy 20-30% platform commissions.
+* **Key Innovation**: Zero-commission subscription model (₹249/month per shop) replacing heavy 20-30% platform commissions.
 * **Target Audience**: Local Kirana store owners, recurring monthly ration buyers, and local delivery partners in Tier 1, 2, and 3 cities.
 
 ---
@@ -36,15 +36,17 @@ graph TD
 
 ```mermaid
 graph LR
-    Shop["🏪 Local Kirana Shop<br/>(Pays ₹149/mo flat)"] --- Platform["⚡ Paasel Hyperlocal Engine<br/>(0% Shop Commission)"]
-    Customer["🛒 Local Customer<br/>(Pays ₹25-35 Delivery Fee)"] --- Platform
-    Rider["🛵 Local Rider<br/>(Earns ₹20-25 Payout)"] --- Platform
-    Platform --> Profit["💰 Paasel Net Margin<br/>(₹8-9 per order)"]
+    Shop["🏪 Local Kirana Shop<br/>(Pays ₹249/mo flat)"] --- Platform["⚡ Paasel Hyperlocal Engine<br/>(0% Shop Commission)"]
+    Customer["🛒 Local Customer<br/>(Pays ₹34-49 Delivery Fee)"] --- Platform
+    Rider["🛵 Local Rider<br/>(Earns ₹25-36 Payout + Parallel Orders)"] --- Platform
+    Platform --> Profit["💰 Paasel Net Margin<br/>(₹9-13 per order)"]
 ```
 
-* **Shop-First Zero Commission**: Shops keep 100% of their product sales. They pay only a flat **₹149/month subscription fee**.
-* **Affordable Hyperlocal Delivery**: Customers pay a fair delivery fee of **₹25 to ₹35** for fast delivery within a 4 km radius.
-* **Fair Rider Payouts**: Delivery partners earn **₹20 to ₹25** per order with tight, localized routes.
+* **Shop-First Zero Commission**: Shops keep 100% of their product sales. They pay only a flat **₹249/month subscription fee** (<₹9/day).
+* **Tiered Hyperlocal Delivery**: 
+  * Orders below ₹100: **₹49 delivery fee** (₹36 rider payout | **₹13 Paasel profit**).
+  * Orders above ₹100: **₹34 delivery fee** (₹25 rider payout | **₹9 Paasel profit**).
+* **Multi-Order Parallel Batching**: Delivery partners deliver multiple orders on the same route simultaneously, boosting rider income to **₹50–₹100+ per trip**.
 * **Built-in Quality Control**: Photo verification at packing and double OTP verification (Pickup OTP + Delivery OTP) to eliminate order disputes.
 
 ---
@@ -59,7 +61,7 @@ graph LR
 │ │ SAM: $30 Billion                                   │ │
 │ │ Tier 1/2/3 Hyperlocal Grocery Delivery Market      │ │
 │ │ ┌────────────────────────────────────────────────┐ │ │
-│ │ │ SOM: ₹25 Crore / Year                          │ │ │
+│ │ │ SOM: ₹50 Crore / Year                          │ │ │
 │ │ │ Initial 5,000 Onboarded Stores (Next 18-24 Mo)  │ │ │
 │ │ └────────────────────────────────────────────────┘ │ │
 │ └────────────────────────────────────────────────────┘ │
@@ -70,33 +72,34 @@ graph LR
 
 ## 💰 4. Unit Economics & Business Model
 
-### A. Per-Order Unit Economics
-For every ration/grocery order processed through Paasel:
+### A. Tiered Delivery Fee & Per-Order Unit Economics
 
 ```mermaid
-pie title Per-Order Delivery Fee Breakdown (Average ₹31 Fee)
-    "Delivery Partner Payout (₹22)" : 71
-    "Paasel Net Profit Margin (₹9)" : 29
+pie title Average Delivery Fee Split (Average ₹41 Fee)
+    "Delivery Partner Payout (₹30)" : 73
+    "Paasel Net Profit Margin (₹11)" : 27
 ```
 
-| Component | Fee Structure | Investor Impact |
-| :--- | :--- | :--- |
-| **Delivery Fee Charged to Customer** | ₹25 – ₹35 | Paid directly at checkout |
-| **Delivery Partner Payout** | ₹20 – ₹25 | Instant rider wallet credit |
-| **Paasel Net Profit Margin** | **₹8 – ₹9** | **Pure platform gross margin per order** |
+| Order Value Tier | Customer Fee | Rider Payout | Paasel Net Profit | Key Advantage |
+| :--- | :---: | :---: | :---: | :--- |
+| **Below ₹100 Order** | **₹49** | **₹36** | **₹13** | High margin on low ticket orders |
+| **Above ₹100 Order** | **₹34** | **₹25** | **₹9** | High volume conversion incentive |
+
+> 🛵 **Rider Parallel Batching**: Riders can carry 2–3 orders per batch on shared routes, making **₹50–₹100+ per delivery run**, driving high rider retention and fast delivery.
 
 ---
 
 ### B. Single Shop Unit Economics
-Assuming a typical Kirana store has **5 regular monthly ration customers** placing **5 to 6 orders per month** ($\approx$ **25 to 30 orders/month**):
+Assuming a typical Kirana store processes **50 orders per month**:
 
-$$\text{Monthly Revenue per Shop} = \text{Subscription Fee (₹149)} + (\text{Orders} \times \text{Net Profit Margin})$$
+$$\text{Monthly Revenue per Shop} = \text{Subscription Fee (₹249)} + (\text{Monthly Orders (50)} \times \text{Net Profit Margin})$$
 
-* **Subscription Fee**: ₹149 / month
-* **Order Profit Margin**:
-  * $25 \text{ orders} \times \text{₹8} = \text{₹200}$
-  * $30 \text{ orders} \times \text{₹9} = \text{₹270}$
-* **Total Net Monthly Profit per Shop**: **₹349 to ₹419 / month**
+* **Subscription Fee**: ₹249 / month
+* **Order Profit Margin (50 orders/month)**:
+  * Min Margin (Above ₹100 orders @ ₹9/order): $50 \times \text{₹9} = \mathbf{₹450}$
+  * Avg Margin (Weighted blend @ ₹11/order): $50 \times \text{₹11} = \mathbf{₹550}$
+  * Max Margin (Below ₹100 orders @ ₹13/order): $50 \times \text{₹13} = \mathbf{₹650}$
+* **Total Net Monthly Profit per Shop**: **₹699 to ₹899 / month**
 
 ---
 
@@ -104,21 +107,21 @@ $$\text{Monthly Revenue per Shop} = \text{Subscription Fee (₹149)} + (\text{Or
 
 ```mermaid
 graph TD
-    P1["Phase 1: 100 Shops<br/>₹34,900 - ₹41,900 / mo"] --> P2["Phase 2: 150 Shops<br/>₹52,350 - ₹62,850 / mo"]
-    P2 --> P3["Phase 3: 500 Shops<br/>₹1,74,500 - ₹2,09,500 / mo"]
-    P3 --> P4["Phase 4: 2,000 Shops<br/>₹6,98,000 - ₹8,38,000 / mo"]
-    P4 --> P5["Phase 5: 5,000 Shops<br/>₹17.45L - ₹20.95L / mo (~₹2.5 Cr ARR)"]
+    P1["Phase 1: 100 Shops<br/>₹69,900 - ₹89,900 / mo (~₹10.7L ARR)"] --> P2["Phase 2: 150 Shops<br/>₹1,04,850 - ₹1,34,850 / mo (~₹16.1L ARR)"]
+    P2 --> P3["Phase 3: 500 Shops<br/>₹3,49,500 - ₹4,49,500 / mo (~₹53.9L ARR)"]
+    P3 --> P4["Phase 4: 2,000 Shops<br/>₹13,98,000 - ₹17,98,000 / mo (~₹2.15 Cr ARR)"]
+    P4 --> P5["Phase 5: 5,000 Shops<br/>₹34.95L - ₹44.95L / mo (~₹5.39 Cr ARR)"]
 ```
 
 #### Detailed Financial Scaling Table:
 
 | Metric | Phase 1 (100 Shops) | Phase 2 (150 Shops) | Phase 3 (500 Shops) | Phase 4 (2,000 Shops) | Phase 5 (5,000 Shops) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Monthly Subscription Revenue (₹149/shop)** | ₹14,900 | ₹22,350 | ₹74,500 | ₹2,98,000 | ₹7,45,000 |
-| **Monthly Orders Delivered (25 - 30/shop)** | 2,500 - 3,000 | 3,750 - 4,500 | 12,500 - 15,000 | 50,000 - 60,000 | 1,25,000 - 1,50,000 |
-| **Order Profit Margin Earnings (₹8 - ₹9)** | ₹20,000 - ₹27,000 | ₹30,000 - ₹40,500 | ₹1,00,000 - ₹1,35,000 | ₹4,00,000 - ₹5,40,000 | ₹10,00,000 - ₹13,50,000 |
-| **Total Monthly Gross Profit** | **₹34,900 - ₹41,900** | **₹52,350 - ₹62,850** | **₹1,74,500 - ₹2,09,500** | **₹6,98,000 - ₹8,38,000** | **₹17,45,000 - ₹20,95,000** |
-| **Annualized Recurring Revenue (ARR)** | **~₹5.0 Lakhs** | **~₹7.5 Lakhs** | **~₹25.1 Lakhs** | **~₹1.00 Crore** | **~₹2.51 Crores** |
+| **Monthly Subscription (₹249/shop)** | ₹24,900 | ₹37,350 | ₹1,24,500 | ₹4,98,000 | ₹12,45,000 |
+| **Monthly Orders (50 orders/shop)** | 5,000 | 7,500 | 25,000 | 1,00,000 | 2,50,000 |
+| **Order Profit Margin (₹9 - ₹13)** | ₹45,000 - ₹65,000 | ₹67,500 - ₹97,500 | ₹2,25,000 - ₹3,25,000 | ₹9,00,000 - ₹13,00,000 | ₹22,50,000 - ₹32,50,000 |
+| **Total Monthly Gross Profit** | **₹69,900 - ₹89,900** | **₹1,04,850 - ₹1,34,850** | **₹3,49,500 - ₹4,49,500** | **₹13,98,000 - ₹17,98,000** | **₹34,95,000 - ₹44,95,000** |
+| **Annualized Revenue (ARR)** | **~₹8.38L - ₹10.78L** | **~₹12.58L - ₹16.18L** | **~₹41.94L - ₹53.94L** | **~₹1.67Cr - ₹2.15Cr** | **~₹4.19Cr - ₹5.39Cr** |
 
 ---
 
@@ -135,7 +138,7 @@ graph TD
     subgraph Backend["⚡ High-Performance Core Engine"]
         FastAPI["FastAPI Python Async Service"]
         PostGIS[("PostgreSQL 16 + PostGIS Spatial Engine")]
-        Celery["Redis + Celery Dispatch Worker"]
+        Celery["Redis + Celery Parallel Dispatch Worker"]
     end
 
     subgraph Defense["🔒 Security & Anti-Fraud"]
@@ -150,7 +153,7 @@ graph TD
 ```
 
 1. **PostGIS Spatial Radius Indexing**: Exact 4 km geographic boundary matching preventing unfulfillable orders.
-2. **Automated Celery Driver Dispatch Cascade**: 35-second order offer window cascading to nearby online riders to guarantee <30 min delivery.
+2. **Automated Celery Parallel Batch Engine**: Dispatches multi-order offers to online riders to deliver multiple orders on shared routes.
 3. **Double OTP & Photo Verification**: Prevents order loss, fraud claims, and delivery disputes.
 4. **Instant Split Settlement**: Razorpay Route instantly splits item costs to shops and delivery payouts to rider wallets.
 
@@ -167,7 +170,7 @@ flowchart LR
 ```
 
 1. **Pin-Code Clustering**: Launching in concentrated clusters of 50–100 shops per locality to maximize delivery rider density.
-2. **Merchant Merchant Onboarding**: Partnering with local Kirana Merchant Associations with a zero-commission pitch.
+2. **Merchant Onboarding**: Partnering with local Kirana Merchant Associations with a zero-commission pitch.
 3. **Shopkeeper-Driven Customer Acquisition**: Placing Paasel QR Code standees at checkout counters. Shops convert their existing offline customers into digital monthly orderers.
 
 ---
@@ -179,13 +182,13 @@ flowchart LR
 ```mermaid
 pie title Use of Funds Allocation
     "Merchant & Customer Acquisition (40%)" : 40
-    "Tech Infrastructure & Feature Scaling (30%)" : 30
+    "Tech Infrastructure & Parallel Batch Scaling (30%)" : 30
     "Operations & Fleet Setup (20%)" : 20
     "Legal, Compliance & Reserve (10%)" : 10
 ```
 
 * **40% Marketing & Sales**: Field onboarding agents, merchant QR standees, and localized customer acquisition.
-* **30% Product & Engineering**: Enhancing real-time tracking, AI batching algorithm, and automated analytics dashboard.
+* **30% Product & Engineering**: Parallel batching routing optimization, live tracking, and analytics dashboards.
 * **20% Operations & Logistics**: Driver onboarding, fleet management, and regional customer support.
 * **10% Compliance & Contingency**: Legal, licensing, payment gateway reserves, and administrative setup.
 
@@ -193,10 +196,10 @@ pie title Use of Funds Allocation
 
 ## 🏆 8. Key Milestones & Roadmap
 
-* **Month 1 - 3**: Onboard **100 - 150 Kirana Shops**, validate unit economics in 2 target pin codes.
-* **Month 4 - 6**: Expand to **500 Kirana Shops**, reach **₹2.0 Lakhs+ monthly gross profit**.
-* **Month 7 - 12**: Scale to **2,000 Shops across 3 cities**, reach **₹1 Crore ARR milestone**.
-* **Month 13 - 24**: Scale to **5,000+ Shops**, achieve **₹2.5 Crore+ ARR** and launch B2B inventory restocking features for shops.
+* **Month 1 - 3**: Onboard **100 - 150 Kirana Shops**, reach **₹1.0 Lakh - ₹1.35 Lakhs monthly gross profit**.
+* **Month 4 - 6**: Expand to **500 Kirana Shops**, reach **₹3.5 Lakhs - ₹4.5 Lakhs monthly gross profit** (~₹50L+ ARR).
+* **Month 7 - 12**: Scale to **2,000 Shops across 3 cities**, reach **₹1.6 Cr - ₹2.1 Cr ARR milestone**.
+* **Month 13 - 24**: Scale to **5,000+ Shops**, achieve **₹5.0 Crore+ ARR** and launch B2B inventory restocking features for shops.
 
 ---
 
