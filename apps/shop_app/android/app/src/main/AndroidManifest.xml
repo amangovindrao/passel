@@ -19,9 +19,10 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
-        android:label="Paasel Shop"
+        android:label="Passel Shop"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"

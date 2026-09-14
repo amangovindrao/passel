@@ -19,9 +19,9 @@ enum LocationDenial {
     LocationDenial.serviceDisabled =>
       'Location is turned off on this phone. Switch it on and try again.',
     LocationDenial.denied =>
-      'Paasel needs your location to find shops that deliver to you.',
+      'Passel needs your location to find shops that deliver to you.',
     LocationDenial.deniedForever =>
-      'Location is blocked for Paasel. Open Settings to allow it.',
+      'Location is blocked for Passel. Open Settings to allow it.',
     LocationDenial.noFix =>
       "Couldn't get a fix. Step outside or near a window and try again.",
   };

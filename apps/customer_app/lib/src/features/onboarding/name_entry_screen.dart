@@ -1,11 +1,12 @@
 import 'package:core/core.dart';
+import 'package:customer_app/src/providers/customer_features_providers.dart';
 import 'package:customer_app/src/providers/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ui_kit/ui_kit.dart';
 
-/// Name entry after first-time OTP.
+/// Name entry after first-time OTP with optional vibe selection.
 class NameEntryScreen extends ConsumerStatefulWidget {
   const NameEntryScreen({super.key});
 
@@ -26,8 +27,6 @@ class _NameEntryScreenState extends ConsumerState<NameEntryScreen> {
       _error = null;
     });
 
-    // Creates the backend account behind the Supabase login, plus the customer
-    // profile. Until this succeeds every other endpoint answers 401.
     final result = await AuthRepository(
       ref.read(apiClientProvider),
     ).register(name: _controller.text.trim(), role: PaaselRole.customer);
@@ -44,6 +43,8 @@ class _NameEntryScreenState extends ConsumerState<NameEntryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentVibe = ref.watch(customerThemePersonalityProvider);
+
     return Scaffold(
       backgroundColor: AppColors.paper,
       body: SafeArea(
@@ -62,6 +63,117 @@ class _NameEntryScreenState extends ConsumerState<NameEntryScreen> {
                 errorText: _error,
                 onChanged: (_) => setState(() {}),
               ),
+              const SizedBox(height: AppSpacing.xl),
+              Text(
+                'Choose App Vibe',
+                style: AppTypography.label.copyWith(color: AppColors.ash),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      onTap: () {
+                        ref
+                            .read(customerThemePersonalityProvider.notifier)
+                            .setPersonality(CustomerThemePersonality.classic);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                          vertical: AppSpacing.sm,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                          border: Border.all(
+                            color: currentVibe == CustomerThemePersonality.classic
+                                ? AppColors.gold
+                                : AppColors.ash.withValues(alpha: 0.25),
+                            width: currentVibe == CustomerThemePersonality.classic ? 2 : 1,
+                          ),
+                          color: currentVibe == CustomerThemePersonality.classic
+                              ? AppColors.gold.withValues(alpha: 0.1)
+                              : Colors.transparent,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.shield_outlined,
+                              size: 16,
+                              color: AppColors.gold,
+                            ),
+                            const SizedBox(width: AppSpacing.xs),
+                            Flexible(
+                              child: Text(
+                                'Classic Sleek',
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTypography.caption.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.ink,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      onTap: () {
+                        ref
+                            .read(customerThemePersonalityProvider.notifier)
+                            .setPersonality(CustomerThemePersonality.pinkie);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                          vertical: AppSpacing.sm,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                          border: Border.all(
+                            color: currentVibe == CustomerThemePersonality.pinkie
+                                ? AppColors.deepBlush
+                                : AppColors.ash.withValues(alpha: 0.25),
+                            width: currentVibe == CustomerThemePersonality.pinkie ? 2 : 1,
+                          ),
+                          color: currentVibe == CustomerThemePersonality.pinkie
+                              ? AppColors.softPink.withValues(alpha: 0.5)
+                              : Colors.transparent,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const CuteShoppingMascot(
+                              size: 18,
+                              animated: false,
+                              showSparkles: false,
+                            ),
+                            const SizedBox(width: AppSpacing.xs),
+                            Flexible(
+                              child: Text(
+                                'Pinkie Cute (Girls)',
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTypography.caption.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: currentVibe == CustomerThemePersonality.pinkie
+                                      ? AppColors.deepBlush
+                                      : AppColors.ink,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               const Spacer(),
               PrimaryButton(
                 label: 'Continue',
@@ -69,6 +181,25 @@ class _NameEntryScreenState extends ConsumerState<NameEntryScreen> {
                 loading: _loading,
                 expand: true,
               ),
+              if (_error != null) ...[
+                const SizedBox(height: AppSpacing.md),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 50),
+                    side: BorderSide(
+                      color: AppColors.gold.withValues(alpha: 0.5),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                    ),
+                  ),
+                  onPressed: () => context.go('/location-setup'),
+                  child: Text(
+                    'Continue in Offline / Demo Mode',
+                    style: AppTypography.label.copyWith(color: AppColors.ink),
+                  ),
+                ),
+              ],
               const SizedBox(height: AppSpacing.xl),
             ],
           ),

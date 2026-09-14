@@ -9,3 +9,4 @@ export 'product.dart';
 export 'shop.dart';
 export 'user.dart';
 export 'wallet.dart';
+export 'group_order.dart';

@@ -70,6 +70,26 @@ class _ShopNameScreenState extends ConsumerState<ShopNameScreen> {
                 loading: _loading,
                 expand: true,
               ),
+              if (_error != null) ...[
+                const SizedBox(height: AppSpacing.md),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 50),
+                    side: BorderSide(
+                      color: AppColors.gold.withValues(alpha: 0.5),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                    ),
+                  ),
+                  onPressed: () => context.go('/kyc'),
+                  child: Text(
+                    'Continue in Offline / Demo Mode',
+                    style: AppTypography.label.copyWith(color: AppColors.gold),
+                  ),
+                ),
+              ],
+              const SizedBox(height: AppSpacing.lg),
             ],
           ),
         ),

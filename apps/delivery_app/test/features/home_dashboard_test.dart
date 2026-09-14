@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:delivery_app/src/features/home/home_screen.dart';
 import 'package:delivery_app/src/features/home/widgets/go_online_toggle.dart';
 import 'package:delivery_app/src/providers/rider_models.dart';
@@ -48,6 +49,13 @@ ProviderContainer _container({
   final container = ProviderContainer(
     overrides: [
       riderDataProvider.overrideWith((ref) async => _approvedRider),
+      walletDataProvider.overrideWith(
+        (ref) async => const WalletData(
+          walletId: 'w1',
+          balancePaise: 45000,
+          ownerType: 'delivery_partner',
+        ),
+      ),
       locationReporterProvider.overrideWith(
         (ref) => StubLocationReporter(
           client: stubApiClient(const {}),

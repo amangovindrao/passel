@@ -82,9 +82,25 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen>
       appBar: AppBar(
         backgroundColor: AppColors.ink,
         title: Text(
-          rider.valueOrNull?.name ?? 'Paasel Rider',
+          rider.valueOrNull?.name ?? 'Passel Rider',
           style: AppTypography.title.copyWith(color: AppColors.paper),
         ),
+        actions: [
+          IconButton(
+            key: const ValueKey('rider-wallet-button'),
+            icon: const Icon(
+              Icons.account_balance_wallet_outlined,
+              color: AppColors.gold,
+            ),
+            tooltip: 'Paasel Wallet',
+            onPressed: () {
+              AppBottomSheet.show<void>(
+                context: context,
+                builder: (_) => const _RiderLedgerSheet(),
+              );
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: ListView(
@@ -125,6 +141,8 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen>
 
             const SizedBox(height: AppSpacing.xxl),
             _TodaySnapshot(count: rider.valueOrNull?.completedToday ?? 0),
+            const SizedBox(height: AppSpacing.lg),
+            const _DedicatedShopDeliveryCard(),
             const SizedBox(height: AppSpacing.lg),
             PositionCard(
               isOnline: online.isOnline,
@@ -182,3 +200,402 @@ class _TodaySnapshot extends StatelessWidget {
     );
   }
 }
+
+class _DedicatedShopDeliveryCard extends ConsumerStatefulWidget {
+  const _DedicatedShopDeliveryCard();
+
+  @override
+  ConsumerState<_DedicatedShopDeliveryCard> createState() =>
+      _DedicatedShopDeliveryCardState();
+}
+
+class _DedicatedShopDeliveryCardState
+    extends ConsumerState<_DedicatedShopDeliveryCard> {
+  final _controller = TextEditingController();
+  bool _isEditing = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final dedicatedCode = ref.watch(dedicatedShopCodeProvider);
+
+    return ScaleOnCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                decoration: BoxDecoration(
+                  color: AppColors.gold.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.storefront,
+                    color: AppColors.gold, size: 20),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Dedicated Shop Delivery',
+                      style: AppTypography.bodyStrong
+                          .copyWith(color: AppColors.paper),
+                    ),
+                    Text(
+                      dedicatedCode == null
+                          ? 'Deliver orders for any nearby shop'
+                          : 'Locked to deliver ONLY for $dedicatedCode',
+                      style: AppTypography.caption.copyWith(
+                        color: dedicatedCode == null
+                            ? AppColors.ash
+                            : AppColors.gold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (dedicatedCode != null)
+                IconButton(
+                  icon:
+                      const Icon(Icons.close, color: AppColors.ash, size: 20),
+                  tooltip: 'Deliver for all shops',
+                  onPressed: () {
+                    ref.read(dedicatedShopCodeProvider.notifier).state = null;
+                    AppSnackbar.show(
+                      context,
+                      message:
+                          'Cleared: You are now accepting orders from all shops',
+                    );
+                  },
+                ),
+            ],
+          ),
+          if (dedicatedCode == null && !_isEditing) ...[
+            const SizedBox(height: AppSpacing.md),
+            OutlinedButton.icon(
+              onPressed: () => setState(() => _isEditing = true),
+              icon: const Icon(Icons.lock_outline, size: 16),
+              label: const Text('Set Dedicated Shop ID (PSL-XXXX)'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.gold,
+                side: const BorderSide(color: AppColors.gold),
+                visualDensity: VisualDensity.compact,
+              ),
+            ),
+          ] else if (_isEditing) ...[
+            const SizedBox(height: AppSpacing.md),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    textCapitalization: TextCapitalization.characters,
+                    style: AppTypography.body.copyWith(color: AppColors.paper),
+                    decoration: InputDecoration(
+                      hintText: 'e.g. PSL-1001',
+                      hintStyle:
+                          AppTypography.body.copyWith(color: AppColors.ash),
+                      isDense: true,
+                      filled: true,
+                      fillColor: AppColors.graphite,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                        vertical: AppSpacing.sm,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppColors.graphite),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppColors.gold),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                ElevatedButton(
+                  onPressed: () {
+                    final code = _controller.text.trim().toUpperCase();
+                    if (code.isEmpty) return;
+                    ref.read(dedicatedShopCodeProvider.notifier).state = code;
+                    setState(() => _isEditing = false);
+                    _controller.clear();
+                    AppSnackbar.show(
+                      context,
+                      message: 'Locked to deliver only for $code',
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.gold,
+                    foregroundColor: AppColors.ink,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  child: const Text('Lock'),
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                IconButton(
+                  icon:
+                      const Icon(Icons.cancel, color: AppColors.ash, size: 20),
+                  onPressed: () => setState(() => _isEditing = false),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _RiderWalletCard extends ConsumerWidget {
+  const _RiderWalletCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final walletAsync = ref.watch(walletDataProvider);
+    final balanceRupees = walletAsync.valueOrNull?.balanceRupees ?? 0.0;
+
+    return ScaleOnCard(
+      onTap: () {
+        AppBottomSheet.show<void>(
+          context: context,
+          builder: (_) => const _RiderLedgerSheet(),
+        );
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                decoration: BoxDecoration(
+                  color: AppColors.gold.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.account_balance_wallet,
+                  color: AppColors.gold,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text('Paasel Wallet', style: AppTypography.bodyStrong),
+                        const SizedBox(width: AppSpacing.xs),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.gold.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'Unified',
+                            style: AppTypography.caption.copyWith(
+                              color: AppColors.gold,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      'Tap to view immutable ledger',
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.ash,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Text(
+                '\u20b9${balanceRupees.toStringAsFixed(2)}',
+                style: AppTypography.title.copyWith(color: AppColors.gold),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            'Delivery earnings settle immediately here. Can be withdrawn or used to order food/groceries as a customer.',
+            style: AppTypography.caption.copyWith(color: AppColors.ash),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RiderLedgerSheet extends ConsumerWidget {
+  const _RiderLedgerSheet();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final walletAsync = ref.watch(walletDataProvider);
+
+    return walletAsync.when(
+      loading: () => const Center(
+        child: Padding(
+          padding: EdgeInsets.all(AppSpacing.xxl),
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      error: (e, _) => Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Text('Failed to load wallet: $e'),
+      ),
+      data: (wallet) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.account_balance_wallet,
+                      color: AppColors.gold,
+                      size: 24,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text('Paasel Wallet Ledger', style: AppTypography.title),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.gold.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                  ),
+                  child: Text(
+                    'Balance: \u20b9${wallet.balanceRupees.toStringAsFixed(2)}',
+                    style: AppTypography.caption.copyWith(
+                      color: AppColors.gold,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              'Unified account ledger (delivery partner + customer roles). All transactions are immutable.',
+              style: AppTypography.caption.copyWith(color: AppColors.ash),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Text('Transactions', style: AppTypography.bodyStrong),
+            const SizedBox(height: AppSpacing.sm),
+            if (wallet.transactions.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
+                child: Center(
+                  child: Text(
+                    'No wallet transactions yet.',
+                    style: AppTypography.caption.copyWith(color: AppColors.ash),
+                  ),
+                ),
+              )
+            else
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 300),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: wallet.transactions.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final tx = wallet.transactions[index];
+                    final isCredit = tx.isCredit;
+                    final prefix = isCredit ? '+' : '-';
+                    final color = isCredit ? AppColors.success : AppColors.danger;
+
+                    return ListTile(
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      leading: CircleAvatar(
+                        radius: 16,
+                        backgroundColor: color.withValues(alpha: 0.15),
+                        child: Icon(
+                          isCredit ? Icons.arrow_downward : Icons.arrow_upward,
+                          size: 16,
+                          color: color,
+                        ),
+                      ),
+                      title: Text(
+                        _txTitle(tx.type),
+                        style: AppTypography.bodyMedium,
+                      ),
+                      subtitle: Text(
+                        tx.description ?? tx.id,
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.ash,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      trailing: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            '$prefix\u20b9${tx.amountRupees.toStringAsFixed(2)}',
+                            style: AppTypography.bodyStrong.copyWith(color: color),
+                          ),
+                          Text(
+                            tx.status,
+                            style: AppTypography.caption.copyWith(
+                              fontSize: 10,
+                              color: AppColors.ash,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  String _txTitle(String type) {
+    switch (type.toLowerCase()) {
+      case 'rider_earning':
+        return 'Delivery Earning';
+      case 'order_wallet_payment':
+        return 'Order Payment';
+      case 'order_refund':
+        return 'Order Refund';
+      case 'admin_adjustment':
+        return 'Admin Adjustment';
+      case 'transaction_reversal':
+        return 'Reversal';
+      default:
+        return type.replaceAll('_', ' ').toUpperCase();
+    }
+  }
+}
+

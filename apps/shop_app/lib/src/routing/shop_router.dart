@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shop_app/src/features/catalog/catalog_screen.dart';
 import 'package:shop_app/src/features/catalog/product_form_screen.dart';
 import 'package:shop_app/src/features/dashboard/dashboard_screen.dart';
+import 'package:shop_app/src/features/onboarding/catalog_setup_screen.dart';
 import 'package:shop_app/src/features/onboarding/kyc_screen.dart';
 import 'package:shop_app/src/features/onboarding/name_entry_screen.dart';
 import 'package:shop_app/src/features/onboarding/otp_screen.dart';
@@ -29,6 +30,15 @@ final shopRouter = GoRouter(
     GoRoute(
       path: '/shop-details',
       builder: (_, __) => const ShopDetailsScreen(),
+    ),
+    GoRoute(
+      path: '/catalog-setup',
+      builder: (_, state) => CatalogSetupScreen(
+        shopId: state.uri.queryParameters['shopId'] ?? 'shop_default',
+        shopName: state.uri.queryParameters['name'] ?? 'My Shop',
+        category: state.uri.queryParameters['category'] ?? 'Kirana & Grocery',
+        shopCode: state.uri.queryParameters['shopCode'] ?? 'PSL-1001',
+      ),
     ),
     GoRoute(path: '/pending', builder: (_, __) => const PendingScreen()),
     GoRoute(path: '/dashboard', builder: (_, __) => const DashboardScreen()),

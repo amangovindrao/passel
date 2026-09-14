@@ -139,6 +139,9 @@ async def make_order(
         address = await make_address(db, customer, lng=dropoff_lng)
         address_id = address.id
 
+    if "payment_status" not in kwargs and status != OrderStatus.PLACED and payment_mode != "cod":
+        kwargs["payment_status"] = "paid"
+
     order = Order(
         id=uuid4(),
         customer_id=customer.id,

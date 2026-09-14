@@ -11,16 +11,22 @@ class OrderSummary {
     required this.deliveryFeePaise,
     required this.paymentMode,
     this.createdAt,
+    this.walletAmountUsedPaise = 0,
+    this.isMultiShop = false,
+    this.parentOrderId,
   });
 
   factory OrderSummary.fromJson(Map<String, dynamic> json) => OrderSummary(
         id: json['id'] as String,
         shopId: json['shop_id'] as String,
         status: json['status'] as String,
-        itemTotalPaise: json['item_total_paise'] as int,
-        deliveryFeePaise: json['delivery_fee_paise'] as int,
-        paymentMode: json['payment_mode'] as String,
+        itemTotalPaise: json['item_total_paise'] as int? ?? 0,
+        deliveryFeePaise: json['delivery_fee_paise'] as int? ?? 0,
+        paymentMode: json['payment_mode'] as String? ?? 'online',
         createdAt: json['created_at'] as String?,
+        walletAmountUsedPaise: json['wallet_amount_used_paise'] as int? ?? 0,
+        isMultiShop: json['is_multi_shop'] as bool? ?? false,
+        parentOrderId: json['parent_order_id'] as String?,
       );
 
   final String id;
@@ -30,8 +36,12 @@ class OrderSummary {
   final int deliveryFeePaise;
   final String paymentMode;
   final String? createdAt;
+  final int walletAmountUsedPaise;
+  final bool isMultiShop;
+  final String? parentOrderId;
 
   int get totalPaise => itemTotalPaise + deliveryFeePaise;
+  int get netPayablePaise => totalPaise - walletAmountUsedPaise;
 }
 
 /// Full order detail.
@@ -49,15 +59,21 @@ class OrderDetail {
     required this.ratings,
     this.batchingRefundPaise,
     this.deliveryOtp,
+    this.walletAmountUsedPaise = 0,
+    this.isMultiShop = false,
+    this.parentOrderId,
   });
 
   factory OrderDetail.fromJson(Map<String, dynamic> json) => OrderDetail(
         id: json['id'] as String,
         shopId: json['shop_id'] as String,
         status: json['status'] as String,
-        itemTotalPaise: json['item_total_paise'] as int,
-        deliveryFeePaise: json['delivery_fee_paise'] as int,
-        paymentMode: json['payment_mode'] as String,
+        itemTotalPaise: json['item_total_paise'] as int? ?? 0,
+        deliveryFeePaise: json['delivery_fee_paise'] as int? ?? 0,
+        paymentMode: json['payment_mode'] as String? ?? 'online',
+        walletAmountUsedPaise: json['wallet_amount_used_paise'] as int? ?? 0,
+        isMultiShop: json['is_multi_shop'] as bool? ?? false,
+        parentOrderId: json['parent_order_id'] as String?,
         items: (json['items'] as List?)
                 ?.map(
                   (e) => OrderDetailItem.fromJson(
@@ -106,6 +122,12 @@ class OrderDetail {
   final List<RatingEntry> ratings;
   final int? batchingRefundPaise;
   final String? deliveryOtp;
+  final int walletAmountUsedPaise;
+  final bool isMultiShop;
+  final String? parentOrderId;
+
+  int get totalPaise => itemTotalPaise + deliveryFeePaise;
+  int get netPayablePaise => totalPaise - walletAmountUsedPaise;
 }
 
 class OrderDetailItem {
@@ -194,6 +216,12 @@ class TrackingData {
     required this.statusHistory,
     this.partnerId,
     this.deliveryOtp,
+    this.handoverInitiatedAt,
+    this.verificationDeadline,
+    this.verificationStatus = 'NOT_INITIATED',
+    this.remainingSeconds = 0,
+    this.additionWindowStatus = 'ADDITION_OPEN',
+    this.canAddMore = false,
   });
 
   factory TrackingData.fromJson(Map<String, dynamic> json) => TrackingData(
@@ -209,6 +237,12 @@ class TrackingData {
             [],
         partnerId: json['partner_id'] as String?,
         deliveryOtp: json['delivery_otp'] as String?,
+        handoverInitiatedAt: json['handover_initiated_at'] as String?,
+        verificationDeadline: json['verification_deadline'] as String?,
+        verificationStatus: json['verification_status'] as String? ?? 'NOT_INITIATED',
+        remainingSeconds: json['remaining_seconds'] as int? ?? 0,
+        additionWindowStatus: json['addition_window_status'] as String? ?? 'ADDITION_OPEN',
+        canAddMore: json['can_add_more'] as bool? ?? false,
       );
 
   final String orderId;
@@ -216,6 +250,12 @@ class TrackingData {
   final List<StatusHistoryEntry> statusHistory;
   final String? partnerId;
   final String? deliveryOtp;
+  final String? handoverInitiatedAt;
+  final String? verificationDeadline;
+  final String verificationStatus;
+  final int remainingSeconds;
+  final String additionWindowStatus;
+  final bool canAddMore;
 }
 
 /// Repository for orders.
@@ -288,6 +328,70 @@ class OrderRepository {
           'reason': reason,
           if (comment != null) 'comment': comment,
         },
+        fromJson: (data) => data as Map<String, dynamic>,
+      );
+
+  /// Delivery verification: Customer verifies items or reports issue.
+  /// If action == 'everything_correct', delivery finalizes immediately.
+  Future<Result<Map<String, dynamic>>> verifyItems({
+    required String orderId,
+    required String action,
+  }) =>
+      _client.post<Map<String, dynamic>>(
+        '/api/v1/orders/$orderId/verify-items',
+        data: {'action': action},
+        fromJson: (data) => data as Map<String, dynamic>,
+      );
+
+  /// Customer reports missing, wrong, damaged, or expired item.
+  Future<Result<Map<String, dynamic>>> reportIssue({
+    required String orderId,
+    required String issueType,
+    required String orderItemId,
+    String? customerNotes,
+    String? evidencePhotoUrl,
+  }) =>
+      _client.post<Map<String, dynamic>>(
+        '/api/v1/orders/$orderId/report-issue',
+        data: {
+          'issue_type': issueType,
+          'order_item_id': orderItemId,
+          if (customerNotes != null) 'customer_notes': customerNotes,
+          if (evidencePhotoUrl != null) 'evidence_photo_url': evidencePhotoUrl,
+        },
+        fromJson: (data) => data as Map<String, dynamic>,
+      );
+
+  /// Check whether active order is eligible for adding more items.
+  Future<Result<Map<String, dynamic>>> getAdditionStatus(String orderId) =>
+      _client.get<Map<String, dynamic>>(
+        '/api/v1/orders/$orderId/addition-status',
+        fromJson: (data) => data as Map<String, dynamic>,
+      );
+
+  /// Add items to active order before packing is sealed.
+  Future<Result<Map<String, dynamic>>> createAddition({
+    required String orderId,
+    required List<Map<String, dynamic>> items,
+    int walletAmountToUsePaise = 0,
+    String paymentMode = 'online',
+    String? idempotencyKey,
+  }) =>
+      _client.post<Map<String, dynamic>>(
+        '/api/v1/orders/$orderId/additions',
+        data: {
+          'items': items,
+          'wallet_amount_to_use_paise': walletAmountToUsePaise,
+          'payment_mode': paymentMode,
+          if (idempotencyKey != null) 'idempotency_key': idempotencyKey,
+        },
+        fromJson: (data) => data as Map<String, dynamic>,
+      );
+
+  /// Shop closes addition window when packing starts / package sealed.
+  Future<Result<Map<String, dynamic>>> closeAdditions(String orderId) =>
+      _client.post<Map<String, dynamic>>(
+        '/api/v1/orders/$orderId/close-additions',
         fromJson: (data) => data as Map<String, dynamic>,
       );
 }

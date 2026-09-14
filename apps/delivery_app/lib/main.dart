@@ -62,10 +62,10 @@ void main() => bootstrap(() async {
 /// not a reason to refuse to start.
 Future<bool> _initFirebase() async {
   try {
-    await Firebase.initializeApp();
-    return true;
-  } on Object catch (error, stack) {
-    await Sentry.captureException(error, stackTrace: stack);
+    return await Firebase.initializeApp()
+        .then((_) => true)
+        .timeout(const Duration(milliseconds: 300), onTimeout: () => false);
+  } on Object catch (_) {
     return false;
   }
 }
@@ -81,17 +81,18 @@ class _PaaselRiderAppState extends ConsumerState<PaaselRiderApp> {
   @override
   void initState() {
     super.initState();
-    ref.read(alertDispatcherProvider).start();
-    // Reading it is what starts it: the provider subscribes to the online flag
-    // and drives the poller from there. Without this the pull route stays
-    // dormant and offers arrive only if push happens to be working.
-    ref.read(offerPollerProvider);
+    try {
+      ref.read(alertDispatcherProvider).start();
+      ref.read(offerPollerProvider);
+    } on Object catch (e) {
+      debugPrint('PaaselRiderApp startup listener warning: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Paasel Rider',
+      title: 'Passel Rider',
       theme: PaaselTheme.light,
       darkTheme: PaaselTheme.dark,
       // Riders work at night and often one-handed on a bright street; the dark

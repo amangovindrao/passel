@@ -133,7 +133,7 @@ class _LocationSetupScreenState extends ConsumerState<LocationSetupScreen> {
         Text('Where do you want delivery?', style: AppTypography.headline),
         const SizedBox(height: AppSpacing.md),
         Text(
-          'Paasel needs your location to show shops that actually deliver to '
+          'Passel needs your location to show shops that actually deliver to '
           'you, and to work out the delivery fee.',
           style: AppTypography.body.copyWith(color: AppColors.ash),
         ),

@@ -27,7 +27,7 @@ class PaaselApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Paasel',
+      title: 'Passel',
       theme: PaaselTheme.light,
       darkTheme: PaaselTheme.dark,
       themeMode: ThemeMode.light,

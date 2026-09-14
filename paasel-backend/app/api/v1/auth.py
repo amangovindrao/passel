@@ -83,11 +83,19 @@ async def register(
 
     existing = await db.scalar(select(User).where(User.id == user_id))
     if existing is not None:
-        await _ensure_profile(db, existing, body.name)
+        if not existing.has_role(body.role):
+            new_roles = list(existing.roles or [])
+            if existing.role and existing.role not in new_roles:
+                new_roles.append(existing.role)
+            if body.role not in new_roles:
+                new_roles.append(body.role)
+            existing.roles = new_roles
+        await _ensure_profile(db, existing, body.name, role=body.role)
         await db.commit()
         return {
             "user_id": str(existing.id),
-            "role": existing.role,
+            "role": body.role,
+            "roles": existing.all_roles,
             "created": False,
         }
 
@@ -102,14 +110,19 @@ async def register(
             "That number is already registered",
         )
 
-    user = User(id=user_id, phone=phone, role=body.role)
+    user = User(id=user_id, phone=phone, role=body.role, roles=[body.role])
     db.add(user)
     await db.flush()
 
-    await _ensure_profile(db, user, body.name)
+    await _ensure_profile(db, user, body.name, role=body.role)
     await db.commit()
 
-    return {"user_id": str(user.id), "role": user.role, "created": True}
+    return {
+        "user_id": str(user.id),
+        "role": user.role,
+        "roles": user.all_roles,
+        "created": True,
+    }
 
 
 @router.get("/me", response_model=UserResponse)
@@ -145,10 +158,13 @@ async def registration_status(payload: TokenPayload, db: DbSession) -> dict:
     return {
         "registered": user is not None,
         "role": user.role if user else None,
+        "roles": user.all_roles if user else [],
     }
 
 
-async def _ensure_profile(db: DbSession, user: User, name: str) -> None:
+async def _ensure_profile(
+    db: DbSession, user: User, name: str, role: str | None = None
+) -> None:
     """Create the role's profile row if it is missing.
 
     Each role keeps its details in its own table, and downstream endpoints
@@ -156,27 +172,30 @@ async def _ensure_profile(db: DbSession, user: User, name: str) -> None:
     /customers/profile all read it. Creating it here means a freshly registered
     user never meets a 404 on their first screen.
     """
-    if user.role == UserRole.CUSTOMER.value:
+    target_role = role or user.role
+    if target_role == UserRole.CUSTOMER.value or user.has_role(UserRole.CUSTOMER):
         existing = await db.scalar(
             select(CustomerProfile).where(CustomerProfile.user_id == user.id)
         )
-        if existing is None:
+        if existing is None and target_role == UserRole.CUSTOMER.value:
             db.add(CustomerProfile(user_id=user.id, name=name))
 
-    elif user.role == UserRole.SHOP_OWNER.value:
+    if target_role == UserRole.SHOP_OWNER.value or user.has_role(UserRole.SHOP_OWNER):
         existing = await db.scalar(
             select(ShopOwnerProfile).where(ShopOwnerProfile.user_id == user.id)
         )
-        if existing is None:
+        if existing is None and target_role == UserRole.SHOP_OWNER.value:
             db.add(ShopOwnerProfile(user_id=user.id, name=name))
 
-    elif user.role == UserRole.DELIVERY_PARTNER.value:
+    if target_role == UserRole.DELIVERY_PARTNER.value or user.has_role(
+        UserRole.DELIVERY_PARTNER
+    ):
         existing = await db.scalar(
             select(DeliveryPartnerProfile).where(
                 DeliveryPartnerProfile.user_id == user.id
             )
         )
-        if existing is None:
+        if existing is None and target_role == UserRole.DELIVERY_PARTNER.value:
             # vehicle_type stays null until the KYC step chooses one.
             db.add(DeliveryPartnerProfile(user_id=user.id, name=name))
 

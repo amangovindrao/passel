@@ -57,10 +57,13 @@ function Get-WifiIp {
 function Get-SupabaseAnonKey {
     Push-Location $repo
     try {
-        $status = npx --yes supabase@latest status -o env 2>$null | Out-String
+        $status = cmd /c "npx --yes supabase@latest status -o env 2>nul" | Out-String
+    } catch {
+        return $null
     } finally {
         Pop-Location
     }
+    if (-not $status) { return $null }
     foreach ($line in ($status -split "`r?`n")) {
         if ($line -match '^ANON_KEY="?([^"]+)"?$') { return $Matches[1] }
     }
@@ -91,9 +94,9 @@ if (-not $SkipConfig) {
 New-Item -ItemType Directory -Force -Path $outDir | Out-Null
 
 $apps = @(
-    @{ Name = 'customer_app'; Label = 'Paasel' },
-    @{ Name = 'shop_app';     Label = 'Paasel Shop' },
-    @{ Name = 'delivery_app'; Label = 'Paasel Rider' }
+    @{ Name = 'customer_app'; Label = 'Passel' },
+    @{ Name = 'shop_app';     Label = 'Passel Shop' },
+    @{ Name = 'delivery_app'; Label = 'Passel Rider' }
 )
 
 $mode = if ($Debug) { 'debug' } else { 'release' }

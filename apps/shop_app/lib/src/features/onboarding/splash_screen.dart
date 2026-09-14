@@ -25,6 +25,25 @@ class _ShopSplashScreenState extends ConsumerState<ShopSplashScreen> {
 
   Future<void> _route() async {
     if (!mounted) return;
+    try {
+      await _decideRoute().timeout(
+        const Duration(seconds: 4),
+        onTimeout: () {
+          if (mounted) {
+            context.go('/phone');
+          }
+        },
+      );
+    } on Object catch (e) {
+      debugPrint('ShopSplashScreen auth routing error: $e');
+      if (mounted) {
+        context.go('/phone');
+      }
+    }
+  }
+
+  Future<void> _decideRoute() async {
+    if (!mounted) return;
     final session = ref.read(supabaseProvider).auth.currentSession;
     if (session == null) {
       context.go('/phone');
@@ -65,5 +84,5 @@ class _ShopSplashScreenState extends ConsumerState<ShopSplashScreen> {
 
   @override
   Widget build(BuildContext context) =>
-      const BrandSplash(wordmark: 'Paasel Shop');
+      const BrandSplash(wordmark: 'Passel Shop');
 }

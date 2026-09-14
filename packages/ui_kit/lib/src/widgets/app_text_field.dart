@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ui_kit/src/theme/app_typography.dart';
 import 'package:ui_kit/src/theme/design_tokens.dart';
 
 /// Standard labeled Paasel input with helper and error states.
 class AppTextField extends StatelessWidget {
   const AppTextField({
-    required this.label,
+    this.label = '',
     this.controller,
     this.hintText,
     this.helperText,
@@ -14,6 +15,12 @@ class AppTextField extends StatelessWidget {
     this.obscureText = false,
     this.enabled = true,
     this.prefixIcon,
+    this.prefixIconConstraints,
+    this.prefix,
+    this.prefixText,
+    this.inputFormatters,
+    this.maxLength,
+    this.autofocus = false,
     this.onChanged,
     super.key,
   });
@@ -27,6 +34,12 @@ class AppTextField extends StatelessWidget {
   final bool obscureText;
   final bool enabled;
   final Widget? prefixIcon;
+  final BoxConstraints? prefixIconConstraints;
+  final Widget? prefix;
+  final String? prefixText;
+  final List<TextInputFormatter>? inputFormatters;
+  final int? maxLength;
+  final bool autofocus;
   final ValueChanged<String>? onChanged;
 
   @override
@@ -34,18 +47,23 @@ class AppTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: AppTypography.label.copyWith(
-            color: Theme.of(context).colorScheme.onSurface,
+        if (label.isNotEmpty) ...[
+          Text(
+            label,
+            style: AppTypography.label.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
-        ),
-        const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: AppSpacing.sm),
+        ],
         TextField(
           controller: controller,
           keyboardType: keyboardType,
           obscureText: obscureText,
           enabled: enabled,
+          autofocus: autofocus,
+          inputFormatters: inputFormatters,
+          maxLength: maxLength,
           onChanged: onChanged,
           style: Theme.of(context).textTheme.bodyLarge,
           decoration: InputDecoration(
@@ -53,6 +71,10 @@ class AppTextField extends StatelessWidget {
             helperText: helperText,
             errorText: errorText,
             prefixIcon: prefixIcon,
+            prefixIconConstraints: prefixIconConstraints,
+            prefix: prefix,
+            prefixText: prefixText,
+            counterText: '',
           ),
         ),
       ],

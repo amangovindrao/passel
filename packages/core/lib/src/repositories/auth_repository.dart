@@ -15,6 +15,8 @@ enum PaaselRole {
   final String wire;
 }
 
+typedef PasselRole = PaaselRole;
+
 /// Outcome of registering. [created] is false when the account already existed,
 /// which is the normal case on every launch after the first.
 class Registration {
@@ -22,31 +24,47 @@ class Registration {
     required this.userId,
     required this.role,
     required this.created,
+    this.roles = const [],
   });
 
   factory Registration.fromJson(Map<String, dynamic> json) => Registration(
     userId: json['user_id'] as String? ?? '',
     role: json['role'] as String? ?? '',
     created: json['created'] as bool? ?? false,
+    roles: (json['roles'] as List?)?.map((e) => e.toString()).toList() ?? [],
   );
 
   final String userId;
   final String role;
   final bool created;
+  final List<String> roles;
+
+  bool hasRole(String targetRole) =>
+      role == targetRole || roles.contains(targetRole);
 }
 
 /// Whether this Supabase identity has an account on the Paasel backend.
 class RegistrationStatus {
-  const RegistrationStatus({required this.registered, this.role});
+  const RegistrationStatus({
+    required this.registered,
+    this.role,
+    this.roles = const [],
+  });
 
   factory RegistrationStatus.fromJson(Map<String, dynamic> json) =>
       RegistrationStatus(
         registered: json['registered'] as bool? ?? false,
         role: json['role'] as String?,
+        roles:
+            (json['roles'] as List?)?.map((e) => e.toString()).toList() ?? [],
       );
 
   final bool registered;
   final String? role;
+  final List<String> roles;
+
+  bool hasRole(String targetRole) =>
+      role == targetRole || roles.contains(targetRole);
 }
 
 /// Bridges a Supabase login to a Paasel account.

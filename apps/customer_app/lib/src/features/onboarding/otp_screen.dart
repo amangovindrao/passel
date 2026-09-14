@@ -109,6 +109,40 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                 style: AppTypography.body.copyWith(color: AppColors.ash),
               ),
               const SizedBox(height: AppSpacing.xxxl),
+              Center(
+                child: InkWell(
+                  onTap: _checking ? null : () => _verify('123456'),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.gold.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
+                      border: Border.all(
+                        color: AppColors.gold.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.bolt, size: 16, color: AppColors.gold),
+                        const SizedBox(width: AppSpacing.xs),
+                        Text(
+                          'Test mode: Tap to auto-fill 123456',
+                          style: AppTypography.caption.copyWith(
+                            color: AppColors.ink,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
               OtpCodeField(
                 key: _fieldKey,
                 enabled: !_checking,

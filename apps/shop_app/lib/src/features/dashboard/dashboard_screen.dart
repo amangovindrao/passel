@@ -65,7 +65,7 @@ class _DashboardBody extends ConsumerWidget {
                       Text('Free trial active', style: AppTypography.label),
                       if (shop.trialEndDate != null)
                         Text(
-                          'Ends ${shop.trialEndDate!.substring(0, 10)}',
+                          'Ends ${shop.trialEndDate!.length >= 10 ? shop.trialEndDate!.substring(0, 10) : shop.trialEndDate!}',
                           style: AppTypography.caption.copyWith(
                             color: AppColors.ash,
                           ),

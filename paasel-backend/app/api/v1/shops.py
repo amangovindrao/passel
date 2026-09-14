@@ -117,3 +117,58 @@ async def get_shop_detail(
         "subscription_status": shop.subscription_status,
         "products": grouped,
     }
+
+
+@router.get("/{shop_id}/eligible-bundle-shops")
+async def get_eligible_bundle_shops(
+    shop_id: UUID,
+    user: Annotated[User, require_role(UserRole.CUSTOMER)],
+    db: DbSession,
+) -> list[dict]:
+    """Find other open shops located strictly within 100 meters of the anchor shop.
+
+    Enforces the 100-meter rule for multi-shop cart bundling using PostGIS ST_DWithin.
+    """
+    anchor = await db.get(Shop, shop_id)
+    if not anchor:
+        raise AppError(404, "not_found", "Anchor shop not found")
+
+    query = text("""
+        SELECT
+            s.id, s.name, s.category, s.is_open,
+            s.delivery_radius_km,
+            ST_Distance(
+                s.location,
+                :anchor_loc
+            ) AS distance_m
+        FROM shops s
+        JOIN shop_owner_profiles sop ON sop.user_id = s.owner_id
+        WHERE s.id != :anchor_id
+          AND s.subscription_status NOT IN ('suspended')
+          AND sop.kyc_status = 'approved'
+          AND s.is_open = true
+          AND ST_DWithin(
+              s.location,
+              :anchor_loc,
+              100
+          )
+        ORDER BY distance_m ASC
+    """)
+
+    rows = (
+        await db.execute(
+            query,
+            {"anchor_id": anchor.id, "anchor_loc": str(anchor.location)},
+        )
+    ).all()
+    return [
+        {
+            "id": str(row.id),
+            "name": row.name,
+            "category": row.category,
+            "is_open": row.is_open,
+            "distance_m": round(row.distance_m, 1),
+            "delivery_radius_km": row.delivery_radius_km,
+        }
+        for row in rows
+    ]

@@ -30,6 +30,25 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   Future<void> _checkAuthAndRoute() async {
     if (!mounted) return;
+    try {
+      await _decideRoute().timeout(
+        const Duration(seconds: 4),
+        onTimeout: () {
+          if (mounted) {
+            context.go('/phone');
+          }
+        },
+      );
+    } on Object catch (e) {
+      debugPrint('SplashScreen auth routing error: $e');
+      if (mounted) {
+        context.go('/phone');
+      }
+    }
+  }
+
+  Future<void> _decideRoute() async {
+    if (!mounted) return;
     final session = ref.read(supabaseClientProvider).auth.currentSession;
     if (session == null) {
       context.go('/phone');
@@ -41,11 +60,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         .read(customerRepositoryProvider)
         .getProfile();
     if (!mounted) return;
-    final profile = profileResult.when(
-      success: (CustomerProfile p) => p,
-      failure: (AppError _) => null,
+
+    CustomerProfile? profile;
+    final isFailure = profileResult.when(
+      success: (CustomerProfile p) {
+        profile = p;
+        return false;
+      },
+      failure: (AppError _) => true,
     );
-    if (profile == null || !profile.exists) {
+
+    if (isFailure || profile == null) {
+      context.go('/phone');
+      return;
+    }
+
+    if (!profile!.exists) {
       context.go('/name');
       return;
     }
@@ -54,13 +84,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     final addressResult = await ref
         .read(addressRepositoryProvider)
         .listAddresses();
+    if (!mounted) return;
+
     final addresses = addressResult.when(
       success: (List<SavedAddress> a) => a,
       failure: (AppError _) => <SavedAddress>[],
     );
-
-    // The address lookup is an await, so the widget may be gone by now.
-    if (!mounted) return;
 
     if (addresses.isEmpty) {
       context.go('/location-setup');
@@ -71,5 +100,5 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => const BrandSplash(wordmark: 'Paasel');
+  Widget build(BuildContext context) => const BrandSplash(wordmark: 'Passel');
 }

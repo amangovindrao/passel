@@ -16,6 +16,7 @@ from app.api.v1 import (
     customers,
     delivery,
     delivery_partners,
+    group_orders,
     health,
     order_history,
     order_placement,
@@ -95,6 +96,7 @@ def create_app() -> FastAPI:
     app.include_router(delivery.router)
     app.include_router(delivery_partners.router)
     app.include_router(payments.router)
+    app.include_router(group_orders.router)
     app.include_router(wallets.router)
     app.include_router(subscriptions.router)
     app.include_router(admin.router)

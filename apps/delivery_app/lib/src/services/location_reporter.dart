@@ -132,7 +132,7 @@ class LocationReporter {
           accuracy: LocationAccuracy.high,
           distanceFilter: 10,
           foregroundNotificationConfig: const ForegroundNotificationConfig(
-            notificationTitle: 'Paasel Rider',
+            notificationTitle: 'Passel Rider',
             notificationText: "You're online and available",
             enableWakeLock: true,
           ),

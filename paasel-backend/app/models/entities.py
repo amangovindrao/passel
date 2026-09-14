@@ -21,21 +21,32 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
 from app.domain.enums import (
+    AdditionStatus,
+    AdditionWindowStatus,
+    DeliveryStatus,
     DisputeStatus,
+    GroupOrderStatus,
+    HandoverType,
+    InventoryReservationStatus,
     ItemAvailability,
     KycStatus,
     OfferType,
     OrderStatus,
+    OrderType,
     PaymentMode,
     PaymentStatus,
     PhotoCapturedBy,
     PhotoStage,
     RatedEntityType,
     RefundStatus,
+    ReturnChargePayer,
+    ReturnReason,
+    ReturnStatus,
     StockStatus,
     SubscriptionStatus,
     UserRole,
     VehicleType,
+    VerificationStatus,
     WalletOwnerType,
     WalletTxnType,
 )
@@ -69,6 +80,23 @@ class User(TimestampMixin, Base):
     id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     phone: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
     role: Mapped[UserRole] = mapped_column(String(20), nullable=False, index=True)
+    roles: Mapped[list[str]] = mapped_column(
+        ARRAY(String(20)), nullable=False, default=list, server_default="{}"
+    )
+
+    def has_role(self, role: UserRole | str) -> bool:
+        target = role.value if isinstance(role, UserRole) else str(role)
+        if self.role == target:
+            return True
+        return target in (self.roles or [])
+
+    @property
+    def all_roles(self) -> list[str]:
+        res = [self.role] if self.role else []
+        for r in (self.roles or []):
+            if r not in res:
+                res.append(r)
+        return res
 
 
 class CustomerProfile(TimestampMixin, Base):
@@ -238,6 +266,9 @@ class Product(TimestampMixin, Base):
     stock_status: Mapped[StockStatus] = mapped_column(
         String(20), nullable=False, server_default="available"
     )
+    stock_quantity: Mapped[int] = mapped_column(
+        Integer, nullable=False, server_default="100"
+    )
 
     __table_args__ = (
         CheckConstraint("price_paise >= 0", name="nonneg_product_price"),
@@ -268,7 +299,7 @@ class Order(TimestampMixin, Base):
     status: Mapped[OrderStatus] = mapped_column(String(40), nullable=False, index=True)
     item_total_paise: Mapped[int] = mapped_column(Integer, nullable=False)
     delivery_fee_paise: Mapped[int] = mapped_column(Integer, nullable=False)
-    payment_mode: Mapped[PaymentMode] = mapped_column(String(10), nullable=False)
+    payment_mode: Mapped[PaymentMode] = mapped_column(String(20), nullable=False)
     payment_status: Mapped[str] = mapped_column(
         String(20), nullable=False, server_default="pending"
     )
@@ -280,6 +311,53 @@ class Order(TimestampMixin, Base):
     )
     cancellation_deduction_paise: Mapped[int] = mapped_column(
         Integer, nullable=False, server_default="0"
+    )
+    parent_order_id: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("orders.id", ondelete="CASCADE"),
+        index=True,
+        nullable=True,
+    )
+    wallet_amount_used_paise: Mapped[int] = mapped_column(
+        Integer, nullable=False, server_default="0"
+    )
+    external_amount_paise: Mapped[int] = mapped_column(
+        Integer, nullable=False, server_default="0"
+    )
+    is_multi_shop: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default="false"
+    )
+    order_type: Mapped[OrderType] = mapped_column(
+        String(30), nullable=False, server_default="NORMAL_ORDER", index=True
+    )
+    delivery_status: Mapped[str] = mapped_column(
+        String(30), nullable=False, server_default="NOT_READY", index=True
+    )
+    group_session_id: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("group_order_sessions.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    paid_by_user_id: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    paid_by_role: Mapped[str | None] = mapped_column(
+        String(30), nullable=True
+    )
+    handover_initiated_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    verification_deadline: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    verification_status: Mapped[str] = mapped_column(
+        String(30), nullable=False, server_default="NOT_INITIATED", index=True
+    )
+    addition_window_status: Mapped[str] = mapped_column(
+        String(30), nullable=False, server_default="ADDITION_OPEN", index=True
     )
 
     __table_args__ = (
@@ -489,13 +567,32 @@ class WalletTransaction(TimestampMixin, Base):
     wallet_id: Mapped[UUID] = mapped_column(
         ForeignKey("wallets.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    type: Mapped[WalletTxnType] = mapped_column(String(20), nullable=False)
+    type: Mapped[WalletTxnType] = mapped_column(String(40), nullable=False)
     amount_paise: Mapped[int] = mapped_column(Integer, nullable=False)
+    direction: Mapped[str] = mapped_column(
+        String(10), nullable=False, server_default="CREDIT"
+    )
+    status: Mapped[str] = mapped_column(
+        String(20), nullable=False, server_default="COMPLETED"
+    )
     order_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("orders.id", ondelete="SET NULL")
     )
+    delivery_reference: Mapped[str | None] = mapped_column(String(100))
+    idempotency_key: Mapped[str | None] = mapped_column(String(120))
+    description: Mapped[str | None] = mapped_column(Text)
+    metadata_json: Mapped[dict | None] = mapped_column(JSONB)
     settlement_channel: Mapped[str | None] = mapped_column(String(20))
     settled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+    __table_args__ = (
+        Index(
+            "uq_wallet_txns_idempotency_key",
+            "idempotency_key",
+            unique=True,
+            postgresql_where=idempotency_key.is_not(None),
+        ),
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -535,3 +632,298 @@ class Dispute(TimestampMixin, Base):
     status: Mapped[DisputeStatus] = mapped_column(String(20), nullable=False)
     resolution: Mapped[str | None] = mapped_column(Text)
     linked_photo_ids: Mapped[list[UUID] | None] = mapped_column(ARRAY(PGUUID(as_uuid=True)))
+
+
+# ---------------------------------------------------------------------------
+# Group Orders & Private Cart Mode
+# ---------------------------------------------------------------------------
+
+
+class GroupOrderSession(TimestampMixin, Base):
+    __tablename__ = "group_order_sessions"
+
+    id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    creator_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    delivery_address_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("addresses.id", ondelete="SET NULL"), nullable=True
+    )
+    society_name: Mapped[str] = mapped_column(String(120), nullable=False)
+    status: Mapped[GroupOrderStatus] = mapped_column(
+        String(30), nullable=False, server_default="OPEN", index=True
+    )
+    private_cart_mode: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default="false"
+    )
+    closes_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    join_deadline: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    cart_deadline: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    payment_deadline: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    locked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    payment_complete: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default="false"
+    )
+
+    members: Mapped[list["GroupOrderMember"]] = relationship(
+        "GroupOrderMember", back_populates="session", cascade="all, delete-orphan"
+    )
+    cart_items: Mapped[list["GroupOrderCartItem"]] = relationship(
+        "GroupOrderCartItem", back_populates="session", cascade="all, delete-orphan"
+    )
+    packages: Mapped[list["GroupOrderPackage"]] = relationship(
+        "GroupOrderPackage", back_populates="session", cascade="all, delete-orphan"
+    )
+
+
+class GroupOrderMember(TimestampMixin, Base):
+    __tablename__ = "group_order_members"
+
+    id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    session_id: Mapped[UUID] = mapped_column(
+        ForeignKey("group_order_sessions.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    name: Mapped[str] = mapped_column(String(120), nullable=False)
+    is_creator: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="false")
+    status: Mapped[str] = mapped_column(String(30), nullable=False, server_default="joined")
+    paid_amount_paise: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+    wallet_amount_used_paise: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+    payment_status: Mapped[str] = mapped_column(String(20), nullable=False, server_default="pending")
+
+    session: Mapped["GroupOrderSession"] = relationship("GroupOrderSession", back_populates="members")
+    items: Mapped[list["GroupOrderCartItem"]] = relationship(
+        "GroupOrderCartItem", back_populates="member", cascade="all, delete-orphan"
+    )
+
+    __table_args__ = (
+        Index("uq_group_order_member_session_user", "session_id", "user_id", unique=True),
+    )
+
+
+class GroupOrderCartItem(TimestampMixin, Base):
+    __tablename__ = "group_order_cart_items"
+
+    id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    session_id: Mapped[UUID] = mapped_column(
+        ForeignKey("group_order_sessions.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    member_id: Mapped[UUID] = mapped_column(
+        ForeignKey("group_order_members.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    shop_id: Mapped[UUID] = mapped_column(
+        ForeignKey("shops.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    product_id: Mapped[UUID] = mapped_column(
+        ForeignKey("products.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    qty: Mapped[int] = mapped_column(Integer, nullable=False)
+    price_at_addition_paise: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    session: Mapped["GroupOrderSession"] = relationship("GroupOrderSession", back_populates="cart_items")
+    member: Mapped["GroupOrderMember"] = relationship("GroupOrderMember", back_populates="items")
+    product: Mapped["Product"] = relationship("Product")
+    shop: Mapped["Shop"] = relationship("Shop")
+
+    __table_args__ = (
+        CheckConstraint("qty > 0", name="nonneg_group_cart_qty"),
+        CheckConstraint("price_at_addition_paise >= 0", name="nonneg_group_cart_price"),
+    )
+
+
+class InventoryReservation(TimestampMixin, Base):
+    __tablename__ = "inventory_reservations"
+
+    id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    product_id: Mapped[UUID] = mapped_column(
+        ForeignKey("products.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    order_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("orders.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    group_session_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("group_order_sessions.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    qty: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[InventoryReservationStatus] = mapped_column(
+        String(20), nullable=False, server_default="RESERVED", index=True
+    )
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)
+
+    product: Mapped["Product"] = relationship("Product")
+
+    __table_args__ = (
+        CheckConstraint("qty > 0", name="nonneg_reservation_qty"),
+    )
+
+
+class GroupOrderPackage(TimestampMixin, Base):
+    __tablename__ = "group_order_packages"
+
+    id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    session_id: Mapped[UUID] = mapped_column(
+        ForeignKey("group_order_sessions.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    member_id: Mapped[UUID] = mapped_column(
+        ForeignKey("group_order_members.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    shop_id: Mapped[UUID] = mapped_column(
+        ForeignKey("shops.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    order_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("orders.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    rider_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    pickup_status: Mapped[str] = mapped_column(
+        String(30), nullable=False, server_default="PENDING", index=True
+    )
+    delivery_status: Mapped[str] = mapped_column(
+        String(30), nullable=False, server_default="NOT_READY", index=True
+    )
+    handover_status: Mapped[str] = mapped_column(
+        String(30), nullable=False, server_default="PENDING", index=True
+    )
+    handover_otp: Mapped[str | None] = mapped_column(String(4), nullable=True)
+    handover_type: Mapped[HandoverType] = mapped_column(
+        String(30), nullable=False, server_default="CAPTAIN_HANDOVER"
+    )
+
+    session: Mapped["GroupOrderSession"] = relationship("GroupOrderSession", back_populates="packages")
+    member: Mapped["GroupOrderMember"] = relationship("GroupOrderMember")
+    shop: Mapped["Shop"] = relationship("Shop")
+
+
+class OrderAddition(TimestampMixin, Base):
+    __tablename__ = "order_additions"
+
+    id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    original_order_id: Mapped[UUID] = mapped_column(
+        ForeignKey("orders.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    customer_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    shop_id: Mapped[UUID] = mapped_column(
+        ForeignKey("shops.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    member_order_id: Mapped[UUID | None] = mapped_column(PGUUID(as_uuid=True), nullable=True)
+    group_session_id: Mapped[UUID | None] = mapped_column(PGUUID(as_uuid=True), nullable=True)
+    status: Mapped[AdditionStatus] = mapped_column(
+        String(30), nullable=False, server_default="REQUESTED", index=True
+    )
+    item_total_paise: Mapped[int] = mapped_column(Integer, nullable=False)
+    delivery_fee_adjustment_paise: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+    total_addition_paise: Mapped[int] = mapped_column(Integer, nullable=False)
+    wallet_amount_used_paise: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+    external_amount_paise: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+    payment_status: Mapped[str] = mapped_column(String(20), nullable=False, server_default="pending")
+    idempotency_key: Mapped[str | None] = mapped_column(String(36), nullable=True)
+
+    items: Mapped[list["OrderAdditionItem"]] = relationship(
+        "OrderAdditionItem", back_populates="addition", cascade="all, delete-orphan"
+    )
+    order: Mapped["Order"] = relationship("Order")
+    shop: Mapped["Shop"] = relationship("Shop")
+
+    __table_args__ = (
+        CheckConstraint("total_addition_paise >= 0", name="nonneg_addition_total"),
+    )
+
+
+class OrderAdditionItem(TimestampMixin, Base):
+    __tablename__ = "order_addition_items"
+
+    id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    addition_id: Mapped[UUID] = mapped_column(
+        ForeignKey("order_additions.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    product_id: Mapped[UUID] = mapped_column(
+        ForeignKey("products.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    qty: Mapped[int] = mapped_column(Integer, nullable=False)
+    price_at_addition_paise: Mapped[int] = mapped_column(Integer, nullable=False)
+    availability_status: Mapped[str] = mapped_column(String(20), nullable=False, server_default="available")
+
+    addition: Mapped["OrderAddition"] = relationship("OrderAddition", back_populates="items")
+    product: Mapped["Product"] = relationship("Product")
+
+    __table_args__ = (
+        CheckConstraint("qty > 0", name="positive_addition_qty"),
+        CheckConstraint("price_at_addition_paise >= 0", name="nonneg_addition_price"),
+    )
+
+
+class OrderReturn(TimestampMixin, Base):
+    __tablename__ = "order_returns"
+
+    id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    order_id: Mapped[UUID] = mapped_column(
+        ForeignKey("orders.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    order_item_id: Mapped[UUID] = mapped_column(
+        ForeignKey("order_items.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    customer_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    shop_id: Mapped[UUID] = mapped_column(
+        ForeignKey("shops.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    product_id: Mapped[UUID] = mapped_column(
+        ForeignKey("products.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    group_package_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("group_order_packages.id", ondelete="SET NULL"), nullable=True
+    )
+    return_reason: Mapped[ReturnReason] = mapped_column(String(30), nullable=False, index=True)
+    status: Mapped[ReturnStatus] = mapped_column(
+        String(30), nullable=False, server_default="RETURN_REQUESTED", index=True
+    )
+    return_charge_payer: Mapped[ReturnChargePayer] = mapped_column(
+        String(30), nullable=False, server_default="CUSTOMER", index=True
+    )
+    return_charge_paise: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+    refund_amount_paise: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+    customer_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    evidence_photo_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    is_expired_item: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="false")
+    idempotency_key: Mapped[str | None] = mapped_column(String(36), nullable=True)
+
+    order: Mapped["Order"] = relationship("Order")
+    order_item: Mapped["OrderItem"] = relationship("OrderItem")
+    shop: Mapped["Shop"] = relationship("Shop")
+    product: Mapped["Product"] = relationship("Product")
+
+
+class MerchantQualityIncident(TimestampMixin, Base):
+    __tablename__ = "merchant_quality_incidents"
+
+    id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    shop_id: Mapped[UUID] = mapped_column(
+        ForeignKey("shops.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    order_id: Mapped[UUID] = mapped_column(
+        ForeignKey("orders.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    product_id: Mapped[UUID] = mapped_column(
+        ForeignKey("products.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    return_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("order_returns.id", ondelete="SET NULL"), nullable=True
+    )
+    incident_type: Mapped[str] = mapped_column(String(30), nullable=False, index=True)
+    severity: Mapped[str] = mapped_column(String(20), nullable=False, server_default="CRITICAL", index=True)
+    refund_amount_paise: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+    return_cost_paise: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+    status: Mapped[str] = mapped_column(String(30), nullable=False, server_default="RECORDED", index=True)
+
+    shop: Mapped["Shop"] = relationship("Shop")
+    product: Mapped["Product"] = relationship("Product")
+

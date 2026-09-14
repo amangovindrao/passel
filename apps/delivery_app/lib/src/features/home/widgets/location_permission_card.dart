@@ -55,7 +55,7 @@ class _ExplainerCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
-            'Paasel Rider needs your location even while the app is in the '
+            'Passel Rider needs your location even while the app is in the '
             'background. Customers and shops watch your delivery move in real '
             'time, and that stops working the moment your screen locks unless '
             'you allow it always.',

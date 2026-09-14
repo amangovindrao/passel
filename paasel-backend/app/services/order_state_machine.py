@@ -11,6 +11,7 @@ from app.core.errors import AppError
 from app.domain.enums import OrderStatus
 from app.models.entities import (
     DeliveryAssignment,
+    GroupOrderSession,
     Order,
     OrderPhoto,
     OrderStatusHistory,
@@ -157,7 +158,7 @@ async def transition(
         if not assignment or assignment.pickup_code != pickup_code:
             raise AppError(422, "guard_failed", "Invalid pickup code")
 
-    # --- Guard: OUT_FOR_DELIVERY -> DELIVERED requires delivery photo + OTP ---
+    # --- Guard: OUT_FOR_DELIVERY -> DELIVERED requires delivery photo + OTP + payment check ---
     if from_status == OrderStatus.OUT_FOR_DELIVERY and to_status == OrderStatus.DELIVERED:
         photo_count = await db.scalar(
             select(func.count())
@@ -170,6 +171,25 @@ async def transition(
             raise AppError(422, "guard_failed", "Delivery OTP required")
         if order.delivery_otp != otp:
             raise AppError(422, "guard_failed", "Invalid delivery OTP")
+
+        # Payment decoupling guard: unpaid non-COD order cannot be delivered
+        if order.payment_mode != "cod" and getattr(order, "payment_status", "pending") != "paid":
+            raise AppError(
+                422,
+                "guard_failed",
+                "Order must be paid before delivery",
+            )
+
+        # Group Order gate: Rider arriving at group delivery point cannot complete handover
+        # if any active member order has not been paid
+        if getattr(order, "group_session_id", None):
+            session = await db.get(GroupOrderSession, order.group_session_id)
+            if session and not getattr(session, "payment_complete", False):
+                raise AppError(
+                    422,
+                    "group_payment_incomplete",
+                    "Cannot deliver group order until all active member orders are paid",
+                )
 
     # --- Apply transition ---
     order.status = to_status.value

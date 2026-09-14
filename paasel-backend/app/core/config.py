@@ -29,6 +29,17 @@ class Settings(BaseSettings):
     # Derived / optional
     log_level: str = "INFO"
 
+    # Operational & distance configurations (Centralized Single Source of Truth)
+    multi_shop_radius_meters: int = 100
+    group_shop_radius_meters: int = 200
+    group_payment_timeout_minutes: int = 15
+    group_cart_timeout_minutes: int = 30
+    group_max_members: int = 20
+    inventory_reservation_timeout_minutes: int = 10
+    min_order_paise: int = 9900  # ₹99
+    solo_rate_paise_per_km: int = 2000  # ₹20/km
+    min_delivery_fee_paise: int = 2000  # ₹20 floor
+
     @field_validator("database_url")
     @classmethod
     def require_asyncpg(cls, v: str) -> str:

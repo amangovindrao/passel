@@ -46,6 +46,7 @@ def _make_user(role: UserRole) -> User:
         id=UUID(f"00000000-0000-0000-0000-{idx:012d}"),
         phone=f"+9199900000{idx:02d}",
         role=role.value,
+        roles=[role.value],
         created_at=datetime.now(UTC),
         updated_at=datetime.now(UTC),
     )

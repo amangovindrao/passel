@@ -90,7 +90,7 @@ def require_role(*roles: UserRole) -> Callable:
     """Factory for role-gating dependencies."""
 
     async def _check(user: CurrentUser) -> User:
-        if user.role not in roles:
+        if not any(user.has_role(r) for r in roles):
             raise AppError(
                 status.HTTP_403_FORBIDDEN,
                 "forbidden",

@@ -41,6 +41,21 @@ final alertCenterProvider = Provider<AlertCenter>((ref) {
   return center;
 });
 
+// --- Paasel Shared Wallet & Ledger ---
+
+final walletRepositoryProvider = Provider<WalletRepository>(
+  (ref) => WalletRepository(ref.watch(apiClientProvider)),
+);
+
+final walletDataProvider = FutureProvider.autoDispose<WalletData>((ref) async {
+  final repo = ref.watch(walletRepositoryProvider);
+  final result = await repo.getWallet();
+  return result.when(
+    success: (WalletData data) => data,
+    failure: (AppError error) => throw error,
+  );
+});
+
 // --- Rider identity & verification ---
 
 final riderDataProvider = FutureProvider.autoDispose<RiderData>((ref) async {
@@ -296,3 +311,7 @@ final offerPollerProvider = Provider<OfferPoller>((ref) {
 
   return poller;
 });
+
+/// Dedicated shop code when rider chooses to deliver exclusively for a single store.
+final dedicatedShopCodeProvider = StateProvider<String?>((ref) => null);
+

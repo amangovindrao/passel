@@ -6,3 +6,5 @@ abstract final class PaaselTheme {
   static ThemeData get light => AppTheme.light();
   static ThemeData get dark => AppTheme.dark();
 }
+
+typedef PasselTheme = PaaselTheme;

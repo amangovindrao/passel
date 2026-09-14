@@ -44,7 +44,9 @@ async def create_razorpay_order(
     order: Order,
 ) -> dict:
     """Create a Razorpay order for the given Paasel order."""
-    amount = order.item_total_paise + order.delivery_fee_paise
+    total = order.item_total_paise + order.delivery_fee_paise
+    wallet_used = getattr(order, "wallet_amount_used_paise", 0) or 0
+    amount = max(0, total - wallet_used)
     rz_order = await razorpay.create_order(
         amount_paise=amount,
         receipt=str(order.id),
