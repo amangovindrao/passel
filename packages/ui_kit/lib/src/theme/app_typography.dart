@@ -51,9 +51,27 @@ abstract final class AppTypography {
     letterSpacing: 0.1,
     height: 1.35,
   );
+  static TextStyle get headlineMedium => GoogleFonts.sora(
+    fontSize: 24,
+    fontWeight: FontWeight.w600,
+    letterSpacing: -0.3,
+    height: 1.25,
+  );
+  static TextStyle get headlineSmall => GoogleFonts.sora(
+    fontSize: 20,
+    fontWeight: FontWeight.w600,
+    letterSpacing: -0.2,
+    height: 1.3,
+  );
   static TextStyle get caption => GoogleFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.w500,
+    letterSpacing: 0.2,
+    height: 1.35,
+  );
+  static TextStyle get bodySmall => GoogleFonts.inter(
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
     letterSpacing: 0.2,
     height: 1.35,
   );

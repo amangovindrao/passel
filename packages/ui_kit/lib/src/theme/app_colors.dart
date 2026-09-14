@@ -11,6 +11,7 @@ abstract final class AppColors {
   static const success = Color(0xFF2FA84F);
   static const warning = Color(0xFFE8A33D);
   static const danger = Color(0xFFE5484D);
+  static const mist = Color(0xFFE2E2EA);
 
   // Soft pastel & pinkie customer theme accents
   static const softPink = Color(0xFFFDE8EE);
