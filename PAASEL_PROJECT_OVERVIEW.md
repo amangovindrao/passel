@@ -677,6 +677,14 @@ All 237 automated tests pass with zero regressions:
 
 
 
+### 17.6 App Opening, Splash Screen & Login Reliability Architecture
+* **Post-First-Frame Routing**: Auth session inspection and navigation logic across all three apps (`customer_app`, `shop_app`, `delivery_app`) are scheduled via `WidgetsBinding.instance.addPostFrameCallback`. This ensures the widget tree is fully mounted before GoRouter evaluates routes, preventing unhandled navigation crashes during clean install launches.
+* **4-Second Hard Timeout Guard**: In `SplashScreen._checkAuthAndRoute()` (Customer), `ShopSplashScreen._route()` (Shop), and `RiderSplashScreen._route()` (Rider), the route decision future is guarded with `.timeout(const Duration(seconds: 4))`. If any backend, Supabase, KYC, or profile query stalls, the app automatically unfreezes and transitions gracefully to `/phone` login.
+* **Resilient Error Absorption**: All routing pathways are wrapped in `try/catch` blocks (`on Object catch (e)`) with diagnostic logging, preventing unhandled async exceptions from stranding the user on the splash screen.
+* **Android NDK Version Alignment**: Aligned `ndkVersion = "27.0.12077973"` across `customer_app`, `shop_app`, and `delivery_app` Android build configurations to satisfy modern plugin dependencies (`firebase_core`, `google_maps_flutter`, `geolocator`, `sentry_flutter`).
+
+---
+
 ## 🎯 18. Summary Conclusion
 
 1. **Merchant Freedom**: At **₹249/month** with 0% commission, shops get a full ordering store, catalog auto-builder, AI camera digitizer, and dedicated delivery fleet for less than ₹9/day.

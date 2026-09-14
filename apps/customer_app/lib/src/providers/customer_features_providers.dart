@@ -123,6 +123,8 @@ class MonthlyRationNotifier extends StateNotifier<MonthlyRationState> {
     status: 'skipped',
     items: state.items,
   );
+
+  void configureDefaults() => resume();
 }
 
 final monthlyRationProvider =

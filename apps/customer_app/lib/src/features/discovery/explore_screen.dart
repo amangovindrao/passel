@@ -51,7 +51,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               const Icon(Icons.explore_outlined, size: 20, color: AppColors.gold),
               const SizedBox(width: AppSpacing.sm),
             ],
-            const Text('Explore Neighborhood', style: AppTypography.title),
+            Text('Explore Neighborhood', style: AppTypography.title),
           ],
         ),
       ),
@@ -190,7 +190,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                               color: AppColors.ash,
                             ),
                           const SizedBox(height: AppSpacing.md),
-                          const Text(
+                          Text(
                             'No stores match this category right now',
                             style: AppTypography.bodyMedium,
                           ),
@@ -377,10 +377,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Row(
+                Row(
                   children: [
-                    CuteSparkle(size: 16, color: AppColors.deepBlush),
-                    SizedBox(width: AppSpacing.sm),
+                    const CuteSparkle(size: 16, color: AppColors.deepBlush),
+                    const SizedBox(width: AppSpacing.sm),
                     Text('Ask Nearby Shops', style: AppTypography.title),
                   ],
                 ),

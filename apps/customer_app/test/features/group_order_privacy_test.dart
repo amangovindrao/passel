@@ -1,7 +1,5 @@
-import 'package:core/core.dart';
 import 'package:customer_app/src/features/orders/group_order_screen.dart';
 import 'package:customer_app/src/providers/customer_features_providers.dart';
-import 'package:customer_app/src/providers/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -24,10 +24,10 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Row(
+        title: Row(
           children: [
-            CuteCoinBadge(size: 24),
-            SizedBox(width: AppSpacing.sm),
+            const CuteCoinBadge(size: 24),
+            const SizedBox(width: AppSpacing.sm),
             Text('Paasel Wallet', style: AppTypography.title),
           ],
         ),
@@ -87,7 +87,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Transaction Ledger',
                       style: AppTypography.title,
                     ),
@@ -457,14 +457,14 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
             else
               const Icon(Icons.electric_moped_outlined, size: 28, color: AppColors.gold),
             const SizedBox(width: AppSpacing.sm),
-            const Text('Unified Partner Hub', style: AppTypography.title),
+            Text('Unified Partner Hub', style: AppTypography.title),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Your phone number is linked as a verified Delivery Partner and Customer under a single Paasel Identity.',
               style: AppTypography.bodyMedium,
             ),
@@ -475,10 +475,10 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                 color: AppColors.mint.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(AppRadius.md),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.check_circle, size: 20, color: AppColors.success),
-                  SizedBox(width: AppSpacing.sm),
+                  const Icon(Icons.check_circle, size: 20, color: AppColors.success),
+                  const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
                       'Rider earnings reflect directly into your Paasel Wallet balance with zero withdrawal delay.',
@@ -590,7 +590,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
     );
   }
 
-  List<WalletTransaction> _filterTransactions(List<WalletTransaction> list) {
+  List<WalletTransactionItem> _filterTransactions(List<WalletTransactionItem> list) {
     if (_selectedFilter == 'All') return list;
     if (_selectedFilter == 'Earnings') {
       return list.where((t) => t.type == 'rider_earning').toList();
@@ -604,7 +604,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
     return list;
   }
 
-  Widget _buildTransactionTile(WalletTransaction tx) {
+  Widget _buildTransactionTile(WalletTransactionItem tx) {
     final isCredit = tx.isCredit;
     final prefix = isCredit ? '+' : '-';
     final color = isCredit ? AppColors.success : AppColors.danger;
@@ -632,7 +632,9 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                 style: AppTypography.caption.copyWith(color: AppColors.ash),
               ),
             Text(
-              tx.createdAt.toLocal().toString().split('.')[0],
+              tx.createdAt != null
+                  ? tx.createdAt!.split('T').first
+                  : '—',
               style: AppTypography.caption.copyWith(
                 fontSize: 10,
                 color: AppColors.ash.withValues(alpha: 0.8),

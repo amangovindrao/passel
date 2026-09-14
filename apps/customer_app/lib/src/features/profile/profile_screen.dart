@@ -24,7 +24,7 @@ class ProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Profile', style: AppTypography.title),
+        title: Text('My Profile', style: AppTypography.title),
       ),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -38,7 +38,7 @@ class ProfileScreen extends ConsumerWidget {
           const SizedBox(height: AppSpacing.xl),
 
           // Menu Sections
-          const Text('Quick Access', style: AppTypography.label),
+          Text('Quick Access', style: AppTypography.label),
           const SizedBox(height: AppSpacing.sm),
 
           // Theme Personality Tile
@@ -93,13 +93,9 @@ class ProfileScreen extends ConsumerWidget {
             icon: Icons.inventory_2_rounded,
             color: AppColors.deepLavender,
             title: 'Monthly Ration Kit',
-            subtitle: rationAsync.when(
-              data: (r) => r.isConfigured
-                  ? 'Active: ${r.items.length} recurring essentials'
-                  : 'Not configured yet \u2014 tap to set up',
-              loading: () => 'Checking schedule...',
-              error: (_, __) => 'Configure recurring groceries',
-            ),
+            subtitle: rationAsync.isActive
+                ? 'Active: ${rationAsync.items.length} recurring essentials'
+                : 'Paused \u2014 tap to configure',
             onTap: () => _showMonthlyRationDialog(context, ref),
           ),
 
@@ -267,7 +263,7 @@ class ProfileScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Delivery Partner Mode', style: AppTypography.bodyStrong),
+                Text('Delivery Partner Mode', style: AppTypography.bodyStrong),
                 const SizedBox(height: 2),
                 Text(
                   'Switch to the Paasel Rider app with the same phone number.',
@@ -312,7 +308,7 @@ class ProfileScreen extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: AppColors.paper,
         borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(color: AppColors.ash.withValues(alpha: 0.1)),
       ),
@@ -342,14 +338,14 @@ class ProfileScreen extends ConsumerWidget {
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
             CuteBasketIllustration(size: 32),
             SizedBox(width: AppSpacing.sm),
             Text('Monthly Ration Kit', style: AppTypography.title),
           ],
         ),
-        content: const Column(
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -452,7 +448,7 @@ class ProfileScreen extends ConsumerWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
-        title: const Text('App Theme & Personality', style: AppTypography.title),
+        title: Text('App Theme & Personality', style: AppTypography.title),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -492,7 +488,7 @@ class ProfileScreen extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Classic Sleek (Default)', style: AppTypography.bodyStrong),
+                          Text('Classic Sleek (Default)', style: AppTypography.bodyStrong),
                           const SizedBox(height: 2),
                           Text(
                             'Minimalist gold & slate styling, standard clean icons. Professional & focused for adults.',
@@ -547,7 +543,7 @@ class ProfileScreen extends ConsumerWidget {
                         children: [
                           Row(
                             children: [
-                              const Text('Pinkie Cute', style: AppTypography.bodyStrong),
+                              Text('Pinkie Cute', style: AppTypography.bodyStrong),
                               const SizedBox(width: 4),
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
